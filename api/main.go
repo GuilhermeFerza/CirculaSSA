@@ -65,7 +65,7 @@ func main() {
 				}
 
 				query := `
-						SELECT id, titulo, latitude, longitude
+						SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude
 						FROM vagas
 						WHERE ST_DWithin(
 							geom::geography,
@@ -75,7 +75,7 @@ func main() {
 				rows, err = db.Query(query, lon, lat, raio)
 
 			} else {
-				rows, err = db.Query("SELECT id, titulo, latitude, longitude FROM vagas")
+				rows, err = db.Query("SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude FROM vagas")
 			}
 
 			if err != nil {
@@ -87,7 +87,7 @@ func main() {
 			var vagas []Vaga
 			for rows.Next() {
 				var v Vaga
-				if err := rows.Scan(&v.ID, &v.Titulo, &v.Latitude, &v.Longitude); err == nil {
+				if err := rows.Scan(&v.ID, &v.Titulo, &v.Descricao, &v.Empresa, &v.Tipo, &v.Bairro, &v.Latitude, &v.Longitude); err == nil {
 					vagas = append(vagas, v)
 				}
 			}
