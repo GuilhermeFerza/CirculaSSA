@@ -20,7 +20,7 @@ export default function App(){
             setVagas(dados)
         })
         .catch((erro) => console.error("Erro ao buscar vagas: ", erro))
-    })
+    },[])
 
     const salvadorCentro: [number, number] = [-12.9714, -38.5014];
 
