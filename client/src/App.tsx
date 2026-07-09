@@ -41,7 +41,7 @@ export default function App() {
   };
 
   const buscarVagas = useCallback((lat: number, lon: number) => {
-    fetch(`http://localhost:8080/api/vagas?lat=${lat}&lon=${lon}&raio=5000`)
+    fetch(`http://localhost:8080/api/vaga?lat=${lat}&lon=${lon}&raio=5000`)
       .then((resposta) => resposta.json())
       .then((dados) => {
         if (dados.erro) {
