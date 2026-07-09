@@ -1,5 +1,5 @@
 import {useState, useEffect, useCallback} from 'react';
-import { Map, PlusCircle, User} from 'lucide-react'
+import { Map, PlusCircle, User, Filter} from 'lucide-react'
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css'
 import './App.css'
@@ -19,9 +19,21 @@ export default function App(){
     const [vagas, setVagas] = useState<Vaga[]>([]);
     const [vagaSelecionada, setVagaSelecionada] = useState<Vaga | null>(null);
     const [abaAtiva, setAbaAtiva] = useState('mapa');
+    const [filtrosAtivos, setFiltrosAtivos] = useState<string[]>(['Estágio', 'CLT', 'Jovem Aprendiz', 'Mutirão'])
+    const [mostrarFiltros, setMostrarFiltros] = useState(false);
     const [mostrarBoasVindas, setMostrarBoasVindas] = useState(()=>{
         return localStorage.getItem('jaVisitou') !== 'sim';
     });
+
+    const alternarFiltro = (tipo: string) => {
+        if(filtrosAtivos.includes(tipo)){
+            setFiltrosAtivos(filtrosAtivos.filter(t => t !== tipo));
+        }else{
+            setFiltrosAtivos([...filtrosAtivos, tipo]);
+        }
+    };
+
+    const vagasFiltradas = vagas.filter(vaga => filtrosAtivos.includes(vaga.tipo))
 
     const iniciarAplicativo = () => {
         localStorage.setItem('jaVisitou', 'sim');
@@ -75,24 +87,48 @@ export default function App(){
 
 
             {abaAtiva === 'mapa' && (
-                <MapContainer center={salvadorCentro} zoom={12} scrollWheelZoom={true} zoomControl={false}>
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                <>
+                    <MapContainer center={salvadorCentro} zoom={13} scrollWheelZoom={true} zoomControl={false}>
+                        <TileLayer
+                        attribution='&copy; OpenStreetMap'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    <BuscadorDinamico />
-                    
-                    {vagas.map((vaga) => (
-                        <Marker 
-                        key={vaga.id} 
-                        position={[vaga.latitude, vaga.longitude]}
-                        eventHandlers={{
-                            click: () => setVagaSelecionada(vaga)
-                        }}
                         />
-                    ))}
-                </MapContainer>
-            )}
+                        <BuscadorDinamico />
+                        
+                        {vagasFiltradas.map((vaga) => (
+                        <Marker 
+                            key={vaga.id} 
+                            position={[vaga.latitude, vaga.longitude]}
+                            eventHandlers={{ click: () => setVagaSelecionada(vaga) }}
+                        />
+                        ))}
+                    </MapContainer>
+
+                    <button 
+                        className={`btn-abrir-filtros ${mostrarFiltros ? 'ativo' : ''}`}
+                        onClick={() => setMostrarFiltros(!mostrarFiltros)}
+                    >
+                        <Filter size={20} />
+                    </button>
+
+                    {mostrarFiltros && (
+                        <div className="painel-filtros">
+                            <h3>Mostrar oportunidades do tipo:</h3>
+                            <div className="chips-container">
+                                {['Estágio', 'CLT', 'Jovem Aprendiz', 'Mutirão'].map(tipo => (
+                                <button
+                                    key={tipo}
+                                    className={`chip-filtro ${filtrosAtivos.includes(tipo) ? 'ativo' : ''}`}
+                                    onClick={() => alternarFiltro(tipo)}
+                                >
+                                    {tipo}
+                                </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </>
+      )}
             {abaAtiva === 'nova-vaga' && (
                 <div style={{ padding: '20px', textAlign: 'center' }}>
                 <h2>Cadastrar Nova Vaga</h2>

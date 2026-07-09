@@ -1,171 +1,32 @@
+/* Importa a fonte moderna e limpa do Google */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-*{
+* {
   font-family: 'Inter', sans-serif;
   box-sizing: border-box;
 }
 
-.leaflet-container{
-  width: 100%;
+/* O mapa agora ocupa a tela 100%, passando por baixo do menu flutuante */
+.leaflet-container {
+  width: 100vw;
   height: 100vh;
   z-index: 1;
 }
 
-.leaflet-bottom.leaflet-right{
+/* Esconde os créditos do mapa para limpar a tela */
+.leaflet-bottom.leaflet-right {
   display: none;
 }
 
-.overlay{
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 9998;
-}
-
-.bottom-sheet{
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: white;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  padding: 24px;
-  box-shadow: 0px -4px 15px rgba(0, 0, 0, 0.2);
-  z-index: 9999;
-
-  max-width: 600px;
-  margin: 0 auto;
-  right: 0;
-
-  animation: slideUp 0.3s ease-out;
-}
-
-@keyframes slideUp{
-  from{ transform: translateY(100%);}
-  to { transform: translateY(0);}
-}
-
-.botao-fechar{
-  float: right;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  color: #666;
-}
-
-.botao-fechar:hover{
-  color: #000;
-}
-
-.tag-tipo{
-  display: inline-block;
-  background-color: #007bff;
-  color: white;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-.info-empresa{
-  color: #555;
-  margin-top: 5px;
-  font-size: 0.95rem;
-}
-.descricao-vaga{
-  margin-top: 15px;
-  line-height: 1.5;
-  color: #333;
-}
-
-.bottom-nav{
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 10px);
-  height: 68px;
-  max-width: 400px;
-
-
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  border-radius: 24px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  z-index: 10000;
-  padding: 0 8px;
-
-}
-
-.nav-item{
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  font-size: 0.7rem;
-  font-weight: 500;
-  cursor: pointer;
-  flex: 1;
-  height: 100%;
-  transition: all 0.3s ease;
-  gap: 4px;
-}
-
-button:focus{
-  outline: none;
-  color: #00aeff;
-}
-
-.nav-item:hover{    
-  color: #555;
-}
-
-.nav-item:active{
-  color: #0ea5e9;
-  font-weight: 600;
-  transform: scale(0.92);
-}
-
-.nav-item:active::after{
-  content: '';
-  width: 4px;
-  height: 4px;
-  background-color: #0ea5e9;
-  border-radius: 50%;
-  position: absolute;
-  bottom: 6px;
-}
-
-.nav-icon{
-  font-size: 1.5rem;
-  margin-bottom: 2px;
-}
-
-
-.boas-vindas-overlay{
+/* --- Tela de Boas Vindas --- */
+.boas-vindas-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
   background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
-  z-index: 99999;
+  z-index: 99999; /* Fica por cima de absolutamente tudo */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -175,13 +36,13 @@ button:focus{
   text-align: center;
 }
 
-.boas-vindas-overlay h1{
+.boas-vindas-overlay h1 {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 16px;
 }
 
-.boas-vindas-overlay p{
+.boas-vindas-overlay p {
   font-size: 1.1rem;
   line-height: 1.6;
   opacity: 0.9;
@@ -204,4 +65,251 @@ button:focus{
 
 .boas-vindas-btn:active {
   transform: scale(0.95);
+}
+
+/* --- Barra de Navegação Inferior Flutuante (Glassmorphism) --- */
+.bottom-nav {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 48px);
+  max-width: 400px;
+  height: 68px;
+  
+  /* O efeito de vidro fosco */
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  
+  border-radius: 24px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  z-index: 10000;
+  padding: 0 8px;
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  flex: 1;
+  height: 100%;
+  transition: all 0.3s ease;
+  gap: 4px;
+}
+
+button:focus {
+  outline: none;
+}
+
+.nav-item.ativo {
+  color: #0ea5e9;
+  font-weight: 600;
+}
+
+.nav-item.ativo::after {
+  content: '';
+  width: 4px;
+  height: 4px;
+  background-color: #0ea5e9;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 6px;
+}
+
+.nav-item:active {
+  transform: scale(0.92);
+}
+
+/* --- Painel de Detalhes da Vaga (Bottom Sheet) --- */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 9998;
+}
+
+.bottom-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 24px;
+  padding-bottom: 100px; /* Espaço extra para não bater no menu */
+  box-shadow: 0px -4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  
+  max-width: 600px;
+  margin: 0 auto;
+  right: 0;
+  
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.botao-fechar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #64748b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.botao-fechar:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.bottom-sheet h2 {
+  margin: 0 0 8px 0;
+  color: #0f172a;
+  font-size: 1.4rem;
+  padding-right: 40px; /* Evita bater no botão de fechar */
+}
+
+.tag-tipo {
+  display: inline-block;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.info-empresa {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+}
+
+.descricao-vaga {
+  line-height: 1.6;
+  color: #334155;
+}
+
+/* --- Botão Flutuante de Filtro (Canto Superior Direito) --- */
+.btn-abrir-filtros {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 9998;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.btn-abrir-filtros:active {
+  transform: scale(0.9);
+}
+
+.btn-abrir-filtros.ativo {
+  color: #0ea5e9;
+  border-color: #0ea5e9;
+}
+
+/* --- Gaveta de Filtros --- */
+.painel-filtros {
+  position: fixed;
+  bottom: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 48px);
+  max-width: 400px;
+  
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  padding: 20px;
+  z-index: 9998;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  
+  animation: slideUpFiltro 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpFiltro {
+  from { opacity: 0; transform: translate(-50%, 20px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.painel-filtros h3 {
+  margin: 0 0 16px 0;
+  font-size: 0.95rem;
+  color: #334155;
+  text-align: center;
+}
+
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.chip-filtro {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chip-filtro.ativo {
+  background: #0ea5e9;
+  color: white;
+  border-color: #0ea5e9;
+  box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
 }
