@@ -1,5 +1,5 @@
-import {useState, useEffect} from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import {useState, useEffect, useCallback} from 'react';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css'
 import './App.css'
 
@@ -18,20 +18,38 @@ export default function App(){
     const [vagas, setVagas] = useState<Vaga[]>([]);
     const [vagaSelecionada, setVagaSelecionada] = useState<Vaga | null>(null)
 
+    const salvadorCentro: [number, number] = [-12.9714, -38.5014];
 
-    useEffect(()=>{
-        fetch('http://localhost:8080/api/vaga')
-        .then((resposta) => resposta.json())
+    const buscarVagas = useCallback((lat: number, lon: number) => {
+        fetch(`http://localhost:8080/api/vaga?lat=${lat}&lon=${lon}&raio=5000`)
+        .then((resposta)=> resposta.json())
         .then((dados)=>{
-
-            if(Array.isArray(dados)){
+            if (dados.erro){
+                setVagas([])
+            }else if(Array.isArray(dados)){
                 setVagas(dados)
             }
         })
-        .catch((erro) => console.error("Erro ao buscar vagas: ", erro))
-    },[])
+        .catch((erro)=> console.error("Erro ao buscar vagas:", erro))
+    }, []);
 
-    const salvadorCentro: [number, number] = [-12.9714, -38.5014];
+    useEffect(()=>{
+        buscarVagas(salvadorCentro[0], salvadorCentro[1]);
+    }, [buscarVagas])
+
+    function BuscadorDinamico(){
+        useMapEvents({
+            moveend: (evento) => {
+                const mapa = evento.target;
+                const centro = mapa.getCenter();
+
+                console.log("Mapa movido. Buscando vagas para: ", centro.lat, centro.lng)
+                buscarVagas(centro.lat, centro.lng)
+            },
+        });
+        return null
+    }
+
 
     return(
         <>        <MapContainer center={salvadorCentro} zoom={12} scrollWheelZoom={true}
@@ -39,6 +57,7 @@ export default function App(){
         <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <BuscadorDinamico/>
         {vagas.map((vaga) => (
             <Marker 
                 key={vaga.id} 
