@@ -40,8 +40,8 @@ export default function App() {
     }
   };
 
-  const buscarVagas = useCallback((lat: number, lon: number) => {
-    fetch(`http://localhost:8080/api/vaga?lat=${lat}&lon=${lon}&raio=5000`)
+  const buscarVagas = useCallback((lat: number, lon: number, raio: number) => {
+    fetch(`http://localhost:8080/api/vaga?lat=${lat}&lon=${lon}&raio=${raio}`)
       .then((resposta) => resposta.json())
       .then((dados) => {
         if (dados.erro) {
@@ -54,7 +54,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    buscarVagas(salvadorCentro[0], salvadorCentro[1]);
+    buscarVagas(salvadorCentro[0], salvadorCentro[1], 5000);
   }, [buscarVagas]);
 
   const vagasFiltradas = vagas.filter(vaga => filtrosAtivos.includes(vaga.tipo));
@@ -64,6 +64,19 @@ export default function App() {
       moveend: (evento) => {
         const mapa = evento.target;
         const centro = mapa.getCenter();
+        const zoom = mapa.getZoom();
+
+        let raioDinamico = 5000
+
+        if(zoom >= 16){
+            raioDinamico = 2000;
+        } else if (zoom >= 14) {
+          raioDinamico = 5000;
+        } else if (zoom >= 12) {
+          raioDinamico = 15000;
+        } else {
+          raioDinamico = 30000;
+        }
 
         if (timerRef.current) {
           clearTimeout(timerRef.current);
@@ -71,7 +84,7 @@ export default function App() {
 
         timerRef.current = window.setTimeout(() => {
           console.log("Mapa estabilizou. Buscando vagas para:", centro.lat, centro.lng);
-          buscarVagas(centro.lat, centro.lng);
+          buscarVagas(centro.lat, centro.lng, raioDinamico);
         }, 500);
       },
     });
