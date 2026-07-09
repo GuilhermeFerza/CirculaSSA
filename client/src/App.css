@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Importa a fonte moderna e limpa do Google */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -9,10 +10,15 @@
 /* O mapa agora ocupa a tela 100%, passando por baixo do menu flutuante */
 .leaflet-container {
   width: 100vw;
+=======
+.leaflet-container{
+  width: 100%;
+>>>>>>> fd6ce4ebba306ac326685701331a4c8e1556a966
   height: 100vh;
   z-index: 1;
 }
 
+<<<<<<< HEAD
 /* Esconde os créditos do mapa para limpar a tela */
 .leaflet-bottom.leaflet-right {
   display: none;
@@ -135,6 +141,9 @@ button:focus {
 
 /* --- Painel de Detalhes da Vaga (Bottom Sheet) --- */
 .overlay {
+=======
+.overlay{
+>>>>>>> fd6ce4ebba306ac326685701331a4c8e1556a966
   position: fixed;
   top: 0;
   left: 0;
@@ -144,12 +153,17 @@ button:focus {
   z-index: 9998;
 }
 
+<<<<<<< HEAD
 .bottom-sheet {
+=======
+.bottom-sheet{
+>>>>>>> fd6ce4ebba306ac326685701331a4c8e1556a966
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   background-color: white;
+<<<<<<< HEAD
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
   padding: 24px;
@@ -313,3 +327,58 @@ button:focus {
   border-color: #0ea5e9;
   box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
 }
+=======
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 24px;
+  box-shadow: 0px -4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+
+  max-width: 600px;
+  margin: 0 auto;
+  right: 0;
+
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp{
+  from{ transform: translateY(100%);}
+  to { transform: translateY(0);}
+}
+
+.botao-fechar{
+  float: right;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #666;
+}
+
+.botao-fechar:hover{
+  color: #000;
+}
+
+.tag-tipo{
+  display: inline-block;
+  background-color: #007bff;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.info-empresa{
+  color: #555;
+  margin-top: 5px;
+  font-size: 0.95rem;
+}
+.descricao-vaga{
+  margin-top: 15px;
+  line-height: 1.5;
+  color: #333;
+}
+>>>>>>> fd6ce4ebba306ac326685701331a4c8e1556a966
