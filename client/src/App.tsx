@@ -25,6 +25,7 @@ export default function App() {
 
   const [filtrosAtivos, setFiltrosAtivos] = useState<string[]>(['Estágio', 'CLT', 'Jovem Aprendiz', 'Mutirão']);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const [mostrarBairro, setMostrarBairro] = useState<string>('');
   const timerRef = useRef<number | null>(null);
   const salvadorCentro: [number, number] = [-12.9714, -38.5014];
   const iniciarAplicativo = () => {
@@ -39,6 +40,15 @@ export default function App() {
       setFiltrosAtivos([...filtrosAtivos, tipo]);
     }
   };
+
+  const bairrosDisponiveis = Array.from(new Set(vagas.map(v => v.bairro))).filter(Boolean).sort();
+
+  const vagasFiltradas = vagas.filter(vaga => {
+    const passaFiltroTipo = filtrosAtivos.includes(vaga.tipo);
+    const passaFiltroBairro = mostrarBairro === '' || vaga.bairro === mostrarBairro;
+    return passaFiltroTipo && passaFiltroBairro;
+  });
+
 
   const buscarVagas = useCallback((lat: number, lon: number, raio: number) => {
     fetch(`http://localhost:8080/api/vaga?lat=${lat}&lon=${lon}&raio=${raio}`)
@@ -57,7 +67,6 @@ export default function App() {
     buscarVagas(salvadorCentro[0], salvadorCentro[1], 5000);
   }, [buscarVagas]);
 
-  const vagasFiltradas = vagas.filter(vaga => filtrosAtivos.includes(vaga.tipo));
 
   function BuscadorDinamico() {
     useMapEvents({
@@ -142,6 +151,23 @@ export default function App() {
                   </button>
                 ))}
               </div>
+              {bairrosDisponiveis.length > 0 && (
+                <div style={{ marginTop: '20px'}}>
+                  <h3>Filtrar por Bairro</h3>
+                  <select
+                    className='select-bairro'
+                    value={mostrarBairro}
+                    onChange={(e)=> setMostrarBairro(e.target.value)}
+                  >
+                    <option value="">Todos os Bairros</option>
+                    {bairrosDisponiveis.map(bairro => (
+                      <option key={bairro} value={bairro}>
+                        {bairro}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           )}
         </>
