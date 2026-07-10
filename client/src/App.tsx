@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import { Map, PlusCircle, User, Filter } from 'lucide-react';
+import { Map, PlusCircle, User, Filter, PersonStanding } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 
@@ -21,6 +21,9 @@ export default function App() {
   const [abaAtiva, setAbaAtiva] = useState('mapa');
   const [mostrarBoasVindas, setMostrarBoasVindas] = useState(() => {
     return localStorage.getItem('jaVisitou') !== 'sim';
+  });
+  const [perfilUsuario, setPerfilUsuario] = useState(()=>{
+    return localStorage.getItem('perfilUsuario') || '';
   });
 
   const [filtrosAtivos, setFiltrosAtivos] = useState<string[]>(['Estágio', 'CLT', 'Jovem Aprendiz', 'Mutirão']);
@@ -102,15 +105,36 @@ export default function App() {
 
   return (
     <>
-      {mostrarBoasVindas && (
-        <div className="boas-vindas-overlay">
+     
+
+      {!perfilUsuario &&(
+        <div className='boas-vindas-overlay'>
           <h1>CirculaSSA</h1>
-          <p>Encontre oportunidades de emprego, estágios e vagas de jovem aprendiz perto de você com apenas um clique.</p>
-          <button className="boas-vindas-btn" onClick={iniciarAplicativo}>
-            Explorar Mapa
-          </button>
+          <p>Selecione o seu perfil pra começar:</p>
+          <div className="botoes-perfil">
+            <button
+              className='btn-perfil candidato'
+              onClick={()=>{
+                localStorage.setItem('perfilUsuario', 'candidato');
+                setPerfilUsuario('candidato');
+                setAbaAtiva('mapa')
+              }}
+            >
+              Quero Encontrar Vagas
+            </button>
+            <button 
+              className="btn-perfil empresa"
+              onClick={() => {
+              localStorage.setItem('perfilUsuario', 'empresa');
+              setPerfilUsuario('empresa');
+              setAbaAtiva('painel-empresa');
+            }}>
+              Quero Anunciar Vagas
+            </button>
+          </div>
         </div>
       )}
+
 
       {abaAtiva === 'mapa' && (
         <>
