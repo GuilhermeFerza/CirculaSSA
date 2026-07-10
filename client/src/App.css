@@ -379,3 +379,74 @@ button:focus {
 .icone-btn {
   font-size: 1.4rem;
 }
+
+.container-perfil {
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.container-perfil h2 {
+  color: #0f172a;
+  margin-bottom: 30px;
+}
+
+.card-info-perfil {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 30px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.avatar-placeholder {
+  background: #e2e8f0;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-info-perfil p {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0 0 8px 0;
+}
+
+.badge-perfil {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.btn-sair {
+  background-color: #fff1f2;
+  color: #e11d48;
+  border: 1px solid #fecdd3;
+  padding: 16px 24px;
+  width: 100%;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-sair:active {
+  transform: scale(0.96);
+  background-color: #ffe4e6;
+}

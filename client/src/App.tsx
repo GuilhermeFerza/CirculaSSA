@@ -36,6 +36,13 @@ export default function App() {
     setMostrarBoasVindas(false);
   };
 
+
+  const sairDoPerfil = () => {
+    localStorage.removeItem('perfilUsuario');
+    setPerfilUsuario('');
+    setAbaAtiva('mapa');
+  }
+
   const alternarFiltro = (tipo: string) => {
     if (filtrosAtivos.includes(tipo)) {
       setFiltrosAtivos(filtrosAtivos.filter(t => t !== tipo));
@@ -205,9 +212,20 @@ export default function App() {
       )}
 
       {abaAtiva === 'perfil' && (
-        <div style={{ padding: '20px', textAlign: 'center', marginTop: '50px' }}>
+        <div className="container-perfil">
           <h2>Meu Perfil</h2>
-          <p>Configurações e vagas salvas entrarão aqui.</p>
+          <div className="card-info-perfil">
+            <div className="avatar-placeholder">
+              <User size={40} color="#94a3b8" />
+            </div>
+            <p>Mode de Navegação atual</p>
+            <span className='badge-perfil'>
+              {perfilUsuario === 'candidato' ? 'buscando vagas' : 'empresa'}
+            </span>
+          </div>
+          <button className='btn-sair' onClick={sairDoPerfil}>
+            Sair / Trocar de Perfil
+          </button>
         </div>
       )}
 
@@ -222,6 +240,7 @@ export default function App() {
               <strong>Empresa:</strong> {vagaSelecionada.empresa} &bull; <strong>Local:</strong> {vagaSelecionada.bairro}
             </p>
             <p className="descricao-vaga">{vagaSelecionada.descricao}</p>
+
           </div>
         </>
       )}
