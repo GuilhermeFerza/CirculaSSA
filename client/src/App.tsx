@@ -107,8 +107,8 @@ export default function App() {
         <>
           <MapContainer center={salvadorCentro} zoom={13} scrollWheelZoom={true} zoomControl={false}>
             <TileLayer
-              attribution='&copy; OpenStreetMap'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='<a href="https://carto.com/attributions">CARTO</a>'
+              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
             />
             <BuscadorDinamico />
             
