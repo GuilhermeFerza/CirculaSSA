@@ -19,9 +19,6 @@ export default function App() {
   const [vagas, setVagas] = useState<Vaga[]>([]);
   const [vagaSelecionada, setVagaSelecionada] = useState<Vaga | null>(null);
   const [abaAtiva, setAbaAtiva] = useState('mapa');
-  const [mostrarBoasVindas, setMostrarBoasVindas] = useState(() => {
-    return localStorage.getItem('jaVisitou') !== 'sim';
-  });
   const [perfilUsuario, setPerfilUsuario] = useState(()=>{
     return localStorage.getItem('perfilUsuario') || '';
   });
@@ -31,10 +28,6 @@ export default function App() {
   const [mostrarBairro, setMostrarBairro] = useState<string>('');
   const timerRef = useRef<number | null>(null);
   const salvadorCentro: [number, number] = [-12.9714, -38.5014];
-  const iniciarAplicativo = () => {
-    localStorage.setItem('jaVisitou', 'sim');
-    setMostrarBoasVindas(false);
-  };
 
 
   const sairDoPerfil = () => {
@@ -211,6 +204,14 @@ export default function App() {
         </div>
       )}
 
+      {abaAtiva === 'painel-empresa' && (
+        <div style={{ padding: '20px', textAlign: 'center', marginTop: '50px' }}>
+          <h2>Minhas Vagas Anunciadas</h2>
+          <p>O dashboard da empresa entrará aqui.</p>
+        </div>
+      )}
+
+
       {abaAtiva === 'perfil' && (
         <div className="container-perfil">
           <h2>Meu Perfil</h2>
@@ -245,42 +246,69 @@ export default function App() {
         </>
       )}
 
-      <nav className="bottom-nav">
-        <button 
-          className={`nav-item ${abaAtiva === 'mapa' ? 'ativo' : ''}`}
-          onClick={() => {
-            setAbaAtiva('mapa');
-            setMostrarBoasVindas(false);
-          }}
-        >
-          <Map size={22} />
-          Mapa
-        </button>
-        
-        <button 
-          className={`nav-item ${abaAtiva === 'nova-vaga' ? 'ativo' : ''}`}
-          onClick={() => {
-            setAbaAtiva('nova-vaga');
-            setVagaSelecionada(null);
-            setMostrarFiltros(false);
-          }}
-        >
-          <PlusCircle size={22} />
-          Nova Vaga
-        </button>
+      {perfilUsuario && (
+        <nav className="bottom-nav">
 
-        <button 
-          className={`nav-item ${abaAtiva === 'perfil' ? 'ativo' : ''}`}
-          onClick={() => {
-            setAbaAtiva('perfil');
-            setVagaSelecionada(null);
-            setMostrarFiltros(false);
-          }}
-        >
-          <User size={22} />
-          Perfil
-        </button>
-      </nav>
+          {perfilUsuario === 'candidato' && (
+            <>
+              <button 
+                className={`nav-item ${abaAtiva === 'mapa' ? 'ativo' : ''}`} 
+                onClick={() => setAbaAtiva('mapa')}
+              >
+                <Map size={22} /> Mapa
+              </button>
+              
+              <button 
+                className={`nav-item ${abaAtiva === 'salvas' ? 'ativo' : ''}`} 
+                onClick={() => {
+                  setAbaAtiva('salvas');
+                  setVagaSelecionada(null);
+                  setMostrarFiltros(false);
+                }}
+              >
+                <PersonStanding size={22} /> Salvas
+              </button>
+            </>
+          )}
+
+          {perfilUsuario === 'empresa' && (
+            <>
+              <button 
+                className={`nav-item ${abaAtiva === 'painel-empresa' ? 'ativo' : ''}`} 
+                onClick={() => {
+                  setAbaAtiva('painel-empresa');
+                  setVagaSelecionada(null);
+                  setMostrarFiltros(false);
+                }}
+              >
+                <Map size={22} /> Minhas Vagas
+              </button>
+              
+              <button 
+                className={`nav-item ${abaAtiva === 'nova-vaga' ? 'ativo' : ''}`} 
+                onClick={() => {
+                  setAbaAtiva('nova-vaga');
+                  setVagaSelecionada(null);
+                  setMostrarFiltros(false);
+                }}
+              >
+                <PlusCircle size={22} /> Nova Vaga
+              </button>
+            </>
+          )}
+          <button 
+            className={`nav-item ${abaAtiva === 'perfil' ? 'ativo' : ''}`} 
+            onClick={() => {
+              setAbaAtiva('perfil');
+              setVagaSelecionada(null);
+              setMostrarFiltros(false);
+            }}
+          >
+            <User size={22} /> Perfil
+          </button>
+          
+        </nav>
+      )}
     </>
   );
 }
