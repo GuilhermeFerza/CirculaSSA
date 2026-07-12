@@ -6,6 +6,7 @@ import './App.css';
 import MenuInferior from './components/MenuInferior';
 import Onboarding from './components/onBoarding';
 import MapaPrincipal from './components/MapaPrincipal';
+import FormularioVaga from './components/FormularioVaga';
 
 export interface Vaga {
   id: number;
@@ -99,10 +100,7 @@ export default function App() {
       />
 
       {abaAtiva === 'nova-vaga' && (
-        <div style={{ padding: '20px', textAlign: 'center', marginTop: '50px' }}>
-          <h2>Cadastrar Nova Vaga</h2>
-          <p>O formulário entrará aqui!</p>
-        </div>
+        <FormularioVaga />
       )}
 
       {abaAtiva === 'painel-empresa' && (
@@ -156,19 +154,3 @@ export default function App() {
     </>
   );
 }
-
-
-
-
-/*
-src/
- ├── components/
- │    ├── Onboarding.tsx        (A tela azul de perfil)
- │    ├── MenuInferior.tsx      (A barra de navegação inteligente)
- │    ├── Filtros.tsx           (A gaveta com os botões de estágio/bairro)
- │    ├── MapaPrincipal.tsx     (O Leaflet e os marcadores)
- │    └── FormularioVaga.tsx    (O input de cadastro da empresa)
- │
- ├── App.css                    (Pode ser quebrado em módulos CSS depois)
- └── App.tsx                    (Vira apenas o "maestro" que junta as peças)
-*/
