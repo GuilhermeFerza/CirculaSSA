@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import { Map, PlusCircle, User, Filter, PersonStanding } from 'lucide-react';
+import { User, Filter, } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 import MenuInferior from './components/MenuInferior';
 import Onboarding from './components/onBoarding';
+import MapaPrincipal from './components/MapaPrincipal';
 
-interface Vaga {
+export interface Vaga {
   id: number;
   titulo: string;
   descricao: string;
@@ -72,110 +73,30 @@ export default function App() {
     buscarVagas(salvadorCentro[0], salvadorCentro[1], 5000);
   }, [buscarVagas]);
 
-
-  function BuscadorDinamico() {
-    useMapEvents({
-      moveend: (evento) => {
-        const mapa = evento.target;
-        const centro = mapa.getCenter();
-        const zoom = mapa.getZoom();
-
-        let raioDinamico = 5000
-
-        if(zoom >= 16){
-            raioDinamico = 2000;
-        } else if (zoom >= 14) {
-          raioDinamico = 5000;
-        } else if (zoom >= 12) {
-          raioDinamico = 15000;
-        } else {
-          raioDinamico = 30000;
-        }
-
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-        }
-
-        timerRef.current = window.setTimeout(() => {
-          console.log("Mapa estabilizou. Buscando vagas para:", centro.lat, centro.lng);
-          buscarVagas(centro.lat, centro.lng, raioDinamico);
-        }, 500);
-      },
-    });
-    return null;
-  }
-
   return (
     <>
-     
-
-      
     <Onboarding 
       perfilUsuario={perfilUsuario}
       setPerfilUsuario={setPerfilUsuario}
       setAbaAtiva={setAbaAtiva}
     />
 
-      {abaAtiva === 'mapa' && (
-        <>
-          <MapContainer center={salvadorCentro} zoom={13} scrollWheelZoom={true} zoomControl={false}>
-            <TileLayer
-              attribution='<a href="https://carto.com/attributions">CARTO</a>'
-              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-            />
-            <BuscadorDinamico />
-            
-            {vagasFiltradas.map((vaga) => (
-              <Marker 
-                key={vaga.id} 
-                position={[vaga.latitude, vaga.longitude]}
-                eventHandlers={{ click: () => setVagaSelecionada(vaga) }}
-              />
-            ))}
-          </MapContainer>
-
-          <button 
-            className={`btn-abrir-filtros ${mostrarFiltros ? 'ativo' : ''}`}
-            onClick={() => setMostrarFiltros(!mostrarFiltros)}
-          >
-            <Filter size={20} />
-          </button>
-
-          {mostrarFiltros && (
-            <div className="painel-filtros">
-              <h3>Mostrar oportunidades do tipo:</h3>
-              <div className="chips-container">
-                {['Estágio', 'CLT', 'Jovem Aprendiz', 'Mutirão'].map(tipo => (
-                  <button
-                    key={tipo}
-                    className={`chip-filtro ${filtrosAtivos.includes(tipo) ? 'ativo' : ''}`}
-                    onClick={() => alternarFiltro(tipo)}
-                  >
-                    {tipo}
-                  </button>
-                ))}
-              </div>
-              {bairrosDisponiveis.length > 0 && (
-                <div style={{ marginTop: '20px'}}>
-                  <h3>Filtrar por Bairro</h3>
-                  <select
-                    className='select-bairro'
-                    value={mostrarBairro}
-                    onChange={(e)=> setMostrarBairro(e.target.value)}
-                  >
-                    <option value="">Todos os Bairros</option>
-                    {bairrosDisponiveis.map(bairro => (
-                      <option key={bairro} value={bairro}>
-                        {bairro}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-            </div>
-          )}
-        </>
-      )}
+      <MapaPrincipal 
+      
+        buscarVagas={buscarVagas}
+        abaAtiva={abaAtiva}
+        salvadorCentro={salvadorCentro}
+        vagasFiltradas={vagasFiltradas}
+        setVagaSelecionada = {setVagaSelecionada}
+        mostrarFiltros = {mostrarFiltros}
+        filtrosAtivos = {filtrosAtivos}
+        alternarFiltro = {alternarFiltro}
+        bairrosDisponiveis = {bairrosDisponiveis}
+        mostrarBairro = {mostrarBairro}
+        setMostrarBairro = {setMostrarBairro}
+        setMostrarFiltros = {setMostrarFiltros}
+      
+      />
 
       {abaAtiva === 'nova-vaga' && (
         <div style={{ padding: '20px', textAlign: 'center', marginTop: '50px' }}>
