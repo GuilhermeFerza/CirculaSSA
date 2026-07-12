@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import { Map, PlusCircle, User, Filter, PersonStanding } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
+import MenuInferior from './components/MenuInferior';
 
 interface Vaga {
   id: number;
@@ -246,69 +247,28 @@ export default function App() {
         </>
       )}
 
-      {perfilUsuario && (
-        <nav className="bottom-nav">
-
-          {perfilUsuario === 'candidato' && (
-            <>
-              <button 
-                className={`nav-item ${abaAtiva === 'mapa' ? 'ativo' : ''}`} 
-                onClick={() => setAbaAtiva('mapa')}
-              >
-                <Map size={22} /> Mapa
-              </button>
-              
-              <button 
-                className={`nav-item ${abaAtiva === 'salvas' ? 'ativo' : ''}`} 
-                onClick={() => {
-                  setAbaAtiva('salvas');
-                  setVagaSelecionada(null);
-                  setMostrarFiltros(false);
-                }}
-              >
-                <PersonStanding size={22} /> Salvas
-              </button>
-            </>
-          )}
-
-          {perfilUsuario === 'empresa' && (
-            <>
-              <button 
-                className={`nav-item ${abaAtiva === 'painel-empresa' ? 'ativo' : ''}`} 
-                onClick={() => {
-                  setAbaAtiva('painel-empresa');
-                  setVagaSelecionada(null);
-                  setMostrarFiltros(false);
-                }}
-              >
-                <Map size={22} /> Minhas Vagas
-              </button>
-              
-              <button 
-                className={`nav-item ${abaAtiva === 'nova-vaga' ? 'ativo' : ''}`} 
-                onClick={() => {
-                  setAbaAtiva('nova-vaga');
-                  setVagaSelecionada(null);
-                  setMostrarFiltros(false);
-                }}
-              >
-                <PlusCircle size={22} /> Nova Vaga
-              </button>
-            </>
-          )}
-          <button 
-            className={`nav-item ${abaAtiva === 'perfil' ? 'ativo' : ''}`} 
-            onClick={() => {
-              setAbaAtiva('perfil');
-              setVagaSelecionada(null);
-              setMostrarFiltros(false);
-            }}
-          >
-            <User size={22} /> Perfil
-          </button>
-          
-        </nav>
-      )}
+      <MenuInferior
+        perfilUsuario={perfilUsuario}
+        abaAtiva={abaAtiva}
+        setAbaAtiva={setAbaAtiva}
+        setMostrarFiltros={setMostrarFiltros}
+      />
     </>
   );
 }
+
+
+
+
+/*
+src/
+ ├── components/
+ │    ├── Onboarding.tsx        (A tela azul de perfil)
+ │    ├── MenuInferior.tsx      (A barra de navegação inteligente)
+ │    ├── Filtros.tsx           (A gaveta com os botões de estágio/bairro)
+ │    ├── MapaPrincipal.tsx     (O Leaflet e os marcadores)
+ │    └── FormularioVaga.tsx    (O input de cadastro da empresa)
+ │
+ ├── App.css                    (Pode ser quebrado em módulos CSS depois)
+ └── App.tsx                    (Vira apenas o "maestro" que junta as peças)
+*/
