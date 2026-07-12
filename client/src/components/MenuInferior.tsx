@@ -12,9 +12,6 @@ interface MenuInferiorProps{
 
 export default function MenuInferior({ perfilUsuario, abaAtiva, setMostrarFiltros, setAbaAtiva}: MenuInferiorProps){
 
-
-    if(!perfilUsuario) return null
-
     return(
         <>
             {perfilUsuario && (

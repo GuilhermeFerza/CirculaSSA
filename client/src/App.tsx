@@ -4,6 +4,7 @@ import { Map, PlusCircle, User, Filter, PersonStanding } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 import MenuInferior from './components/MenuInferior';
+import Onboarding from './components/onBoarding';
 
 interface Vaga {
   id: number;
@@ -108,34 +109,12 @@ export default function App() {
     <>
      
 
-      {!perfilUsuario &&(
-        <div className='boas-vindas-overlay'>
-          <h1>CirculaSSA</h1>
-          <p>Selecione o seu perfil pra começar:</p>
-          <div className="botoes-perfil">
-            <button
-              className='btn-perfil candidato'
-              onClick={()=>{
-                localStorage.setItem('perfilUsuario', 'candidato');
-                setPerfilUsuario('candidato');
-                setAbaAtiva('mapa')
-              }}
-            >
-              Quero Encontrar Vagas
-            </button>
-            <button 
-              className="btn-perfil empresa"
-              onClick={() => {
-              localStorage.setItem('perfilUsuario', 'empresa');
-              setPerfilUsuario('empresa');
-              setAbaAtiva('painel-empresa');
-            }}>
-              Quero Anunciar Vagas
-            </button>
-          </div>
-        </div>
-      )}
-
+      
+    <Onboarding 
+      perfilUsuario={perfilUsuario}
+      setPerfilUsuario={setPerfilUsuario}
+      setAbaAtiva={setAbaAtiva}
+    />
 
       {abaAtiva === 'mapa' && (
         <>
