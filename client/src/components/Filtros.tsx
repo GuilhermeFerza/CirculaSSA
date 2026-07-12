@@ -30,7 +30,7 @@ export default function Filtros({mostrarFiltros, filtrosAtivos, alternarFiltro, 
                             <button
                                 key={tipo}
                                 className={`chip-filtro ${filtrosAtivos.includes(tipo) ? 'ativo' : ''}`}
-                                onClick={()=> alternarFiltro}
+                                onClick={()=> alternarFiltro(tipo)}
                             >
                                 {tipo}
                             </button>
