@@ -7,6 +7,7 @@ import MenuInferior from './components/MenuInferior';
 import Onboarding from './components/onBoarding';
 import MapaPrincipal from './components/MapaPrincipal';
 import FormularioVaga from './components/FormularioVaga';
+import PainelEmpresa from './components/PainelEmpresa';
 
 export interface Vaga {
   id: number;
@@ -104,10 +105,7 @@ export default function App() {
       )}
 
       {abaAtiva === 'painel-empresa' && (
-        <div style={{ padding: '20px', textAlign: 'center', marginTop: '50px' }}>
-          <h2>Minhas Vagas Anunciadas</h2>
-          <p>O dashboard da empresa entrará aqui.</p>
-        </div>
+        <PainelEmpresa vagas={vagas} />
       )}
 
 
