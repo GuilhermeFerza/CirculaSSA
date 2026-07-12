@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import { User, Filter, } from 'lucide-react';
+import { User } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 import MenuInferior from './components/MenuInferior';
