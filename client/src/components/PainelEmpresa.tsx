@@ -1,18 +1,24 @@
 import { Vaga } from "../App";
 import { Briefcase, Edit, MapPin, Trash2 } from 'lucide-react'
 import FormularioEdicao from "./FormularioEdicao";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-
-interface PainelEmpresaProps{
-    vagas: Vaga[]
-    setVagas: React.Dispatch<React.SetStateAction<Vaga[]>>;
-}
-
-export default function PainelEmpresa({vagas, setVagas}: PainelEmpresaProps){
+export default function PainelEmpresa(){
 
     const [vagaEmEdicao, setVagaEmEdicao]=useState<Vaga | null>(null)
-    const minhaVagas = vagas;
+    const [minhasVagas, setMinhasVagas]=useState<Vaga[]>([])
+
+    useEffect(()=>{
+        fetch("http://localhost:8080/api/vaga")
+            .then(res => res.json())
+            .then(data =>{
+                if(Array.isArray(data)){
+                    setMinhasVagas(data)
+                }
+            })
+            .catch(err => console.error("Erro na req integral de vagas:", err));
+    }, []);  
+
 
 
     const excluirVaga = async (id: number) => {
@@ -24,7 +30,7 @@ export default function PainelEmpresa({vagas, setVagas}: PainelEmpresaProps){
                 method: 'DELETE'
             });
             if(response.ok){
-                setVagas(vagas.filter(vaga => vaga.id !== id));
+                setMinhasVagas(estadoAtual => estadoAtual.filter(vaga => vaga.id !== id));
             }else{
                 alert("Falha ao excluir vaga no servidor.")
             }
@@ -35,7 +41,7 @@ export default function PainelEmpresa({vagas, setVagas}: PainelEmpresaProps){
     }
 
     const atualizarVagaNaLista = (vagaAtualizada: Vaga) => {
-        setVagas(estadoAtual => estadoAtual.map(vaga =>
+        setMinhasVagas(estadoAtual => estadoAtual.map(vaga =>
             vaga.id === vagaAtualizada.id ? vagaAtualizada : vaga
         ));
     }
@@ -49,13 +55,13 @@ export default function PainelEmpresa({vagas, setVagas}: PainelEmpresaProps){
             <h2>Minhas Vagas Anunciadas</h2>
             <p className="subtitulo">Gerencie as oportunidades da sua empresa</p>
             <div className="lista-vagas">
-                {minhaVagas.length === 0 ?(
+                {minhasVagas.length === 0 ?(
                     <div className="estado-vazio">
                         <Briefcase size={48} color="#cbd5e1" />
                         <p>Nenhuma vaga encontrada no sistema.</p>
                     </div>
                 ) : (
-                    minhaVagas.map((vaga) => (
+                    minhasVagas.map((vaga) => (
                         <div key={vaga.id} className="card-vaga-empresa">
                             <div className="cabecalho-card">
                                 <h3>{vaga.titulo}</h3>
