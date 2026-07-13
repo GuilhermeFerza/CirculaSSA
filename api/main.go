@@ -132,6 +132,29 @@ func main() {
 			c.JSON(http.StatusCreated, novaVaga)
 
 		})
+
+		api.DELETE("/vaga/:id", func(c *gin.Context) {
+			idStr := c.Param("id")
+			id, err := strconv.Atoi(idStr)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"erro": "ID invalido"})
+				return
+			}
+			sqlStatement := `DELETE FROM vagas WHERE id = $1`
+			res, err := db.Exec(sqlStatement, id)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao excluir vaga do banco de dados"})
+				return
+			}
+
+			count, err := res.RowsAffected()
+			if err != nil || count == 0 {
+				c.JSON(http.StatusNotFound, gin.H{"erro": "Vaga nao encontrada"})
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{"mensagem": "Vaga excluida com sucesso"})
+		})
+
 	}
 	r.Run(":8080")
 

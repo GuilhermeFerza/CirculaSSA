@@ -109,7 +109,10 @@ export default function App() {
       )}
 
       {abaAtiva === 'painel-empresa' && (
-        <PainelEmpresa vagas={vagas} />
+        <PainelEmpresa 
+          vagas={vagas} 
+          setVagas={setVagas}
+        />
       )}
 
 

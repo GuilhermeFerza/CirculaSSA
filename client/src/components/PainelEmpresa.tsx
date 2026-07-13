@@ -3,10 +3,31 @@ import { Briefcase, Edit, MapPin, Trash2 } from 'lucide-react'
 
 interface PainelEmpresaProps{
     vagas: Vaga[]
+    setVagas: React.Dispatch<React.SetStateAction<Vaga[]>>;
 }
 
-export default function PainelEmpresa({vagas}: PainelEmpresaProps){
+export default function PainelEmpresa({vagas, setVagas}: PainelEmpresaProps){
     const minhaVagas = vagas;
+
+
+    const excluirVaga = async (id: number) => {
+        const confirmacao = window.confirm("Confirma a exclusão desta vaga?");
+        if(!confirmacao) return;
+
+        try{
+            const response = await fetch(`http://localhost:8080/api/vaga/${id}`,{
+                method: 'DELETE'
+            });
+            if(response.ok){
+                setVagas(vagas.filter(vaga => vaga.id !== id));
+            }else{
+                alert("Falha ao excluir vaga no servidor.")
+            }
+        }catch(error){
+            console.error("Erro na req DELETE:", error)
+            alert("Erro de conexão com o servidor")
+        }
+    }
 
     return(
         <div className="container-formulario">
@@ -32,7 +53,7 @@ export default function PainelEmpresa({vagas}: PainelEmpresaProps){
                                 <button className="btn-acao editar" onClick={()=>alert("Abre formulário de edição")}>
                                     <Edit size={16} /> Editar
                                 </button>
-                                <button className="btn-acao excluir" onClick={()=> alert("Chama rota DELETE do Go")}>
+                                <button className="btn-acao excluir" onClick={()=> excluirVaga(vaga.id)}>
                                     <Trash2 size={16} />Excluir
                                 </button>
                             </div>
