@@ -7,6 +7,7 @@ import Onboarding from './components/onBoarding';
 import MapaPrincipal from './components/MapaPrincipal';
 import FormularioVaga from './components/FormularioVaga';
 import PainelEmpresa from './components/PainelEmpresa';
+import VagasSalvas from './components/VagasSalvas';
 
 export interface Vaga {
   id: number;
@@ -70,6 +71,17 @@ export default function App() {
       .catch((erro) => console.error("Erro ao buscar vagas:", erro));
   }, []);
 
+  const favoritarVaga = (id: number) => {
+    const salvos = JSON.parse(localStorage.getItem('vagasSalvas') || '[]')
+    if(!salvos.includes(id)){
+      salvos.push(id);
+      localStorage.setItem('vagasSalvas', JSON.stringify(salvos));
+      alert('Vaga salva com sucesso nas suas listas!');
+    }else{
+      alert('Você já salvou esta vaga antes!')
+    }
+  }
+
   useEffect(() => {
     buscarVagas(salvadorCentro[0], salvadorCentro[1], 5000);
   }, [buscarVagas]);
@@ -108,6 +120,10 @@ export default function App() {
       )}
 
 
+      {abaAtiva === 'salvas' && (
+        <VagasSalvas vagas={vagas} />
+      )}
+
       {abaAtiva === 'perfil' && (
         <div className="container-perfil">
           <h2>Meu Perfil</h2>
@@ -137,7 +153,13 @@ export default function App() {
               <strong>Empresa:</strong> {vagaSelecionada.empresa} &bull; <strong>Local:</strong> {vagaSelecionada.bairro}
             </p>
             <p className="descricao-vaga">{vagaSelecionada.descricao}</p>
-
+            <button
+              className='btn-submit'
+              style={{width: '100%', marginTop: '20px'}}
+              onClick={()=> favoritarVaga(vagaSelecionada.id)}
+            >
+              Salvar Vaga
+            </button>
           </div>
         </>
       )}
