@@ -155,6 +155,53 @@ func main() {
 			c.JSON(http.StatusOK, gin.H{"mensagem": "Vaga excluida com sucesso"})
 		})
 
+		api.PUT("/vaga/:id", func(c *gin.Context) {
+			idStr := c.Param("id")
+			id, err := strconv.Atoi(idStr)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"erro": "ID invalido"})
+				return
+			}
+
+			var vagaAtualizada Vaga
+			if err := c.ShouldBindJSON(&vagaAtualizada); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"erro": "Formato de JSON inválido", "detalhes": err.Error()})
+				return
+			}
+			if vagaAtualizada.Titulo == "" || vagaAtualizada.Latitude == 0 || vagaAtualizada.Longitude == 0 {
+				c.JSON(http.StatusBadRequest, gin.H{"erro": "Dados Incompletos"})
+				return
+			}
+
+			sqlStatement := `
+				UPDATE vagas
+				SET titulo = $1, descricao =$2, empresa = $3, tipo = $4, bairro = $5, latitude = $6, longitude = $7, geom = ST_SetSRID(ST_MakePoint($7, $6), 4326)
+				WHERE id = $8
+
+			`
+			res, err := db.Exec(sqlStatement,
+				vagaAtualizada.Titulo,
+				vagaAtualizada.Descricao,
+				vagaAtualizada.Empresa,
+				vagaAtualizada.Tipo,
+				vagaAtualizada.Bairro,
+				vagaAtualizada.Latitude,
+				vagaAtualizada.Longitude,
+				id,
+			)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Vaga nao encontrada"})
+				return
+			}
+
+			count, err := res.RowsAffected()
+			if err != nil || count == 0 {
+				c.JSON(http.StatusNotFound, gin.H{"erro": "Vaga nao encontrada"})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{"mensagem": "Vaga atualizada com sucesso"})
+		})
 	}
 	r.Run(":8080")
 

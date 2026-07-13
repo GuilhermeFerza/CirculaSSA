@@ -1,5 +1,8 @@
 import { Vaga } from "../App";
 import { Briefcase, Edit, MapPin, Trash2 } from 'lucide-react'
+import FormularioEdicao from "./FormularioEdicao";
+import { useState } from "react";
+
 
 interface PainelEmpresaProps{
     vagas: Vaga[]
@@ -7,6 +10,8 @@ interface PainelEmpresaProps{
 }
 
 export default function PainelEmpresa({vagas, setVagas}: PainelEmpresaProps){
+
+    const [vagaEmEdicao, setVagaEmEdicao]=useState<Vaga | null>(null)
     const minhaVagas = vagas;
 
 
@@ -29,6 +34,16 @@ export default function PainelEmpresa({vagas, setVagas}: PainelEmpresaProps){
         }
     }
 
+    const atualizarVagaNaLista = (vagaAtualizada: Vaga) => {
+        setVagas(estadoAtual => estadoAtual.map(vaga =>
+            vaga.id === vagaAtualizada.id ? vagaAtualizada : vaga
+        ));
+    }
+
+
+
+
+
     return(
         <div className="container-formulario">
             <h2>Minhas Vagas Anunciadas</h2>
@@ -50,7 +65,7 @@ export default function PainelEmpresa({vagas, setVagas}: PainelEmpresaProps){
                                 <MapPin size={16} />{vaga.bairro}
                             </p>
                             <div className="acoes-card">
-                                <button className="btn-acao editar" onClick={()=>alert("Abre formulário de edição")}>
+                                <button className="btn-acao editar" onClick={()=> setVagaEmEdicao(vaga)}>
                                     <Edit size={16} /> Editar
                                 </button>
                                 <button className="btn-acao excluir" onClick={()=> excluirVaga(vaga.id)}>
@@ -61,6 +76,13 @@ export default function PainelEmpresa({vagas, setVagas}: PainelEmpresaProps){
                     ))
                 )}
             </div>
+            {vagaEmEdicao && (
+                <FormularioEdicao 
+                    vagaParaEditar={vagaEmEdicao} 
+                    fecharEdicao={() => setVagaEmEdicao(null)}
+                    atualizarLista={atualizarVagaNaLista}
+                />
+            )}
         </div>
     );
 }
