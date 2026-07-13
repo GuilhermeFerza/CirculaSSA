@@ -1,8 +1,15 @@
 import { useState } from 'react'
 import { CheckCircle, MapPin, Send } from 'lucide-react'
+import { Vaga } from '../App';
 
 
-export default function FormularioVaga(){
+interface FormularioVagaProps{
+    adicionarVagaNaLista: (vaga: Vaga) => void;
+    setAbaAtiva: (aba: string) => void;
+}
+
+
+export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: FormularioVagaProps){
     
     const [titulo, setTitulo] = useState('');
     const [empresa, setEmpresa] = useState('');
@@ -70,7 +77,9 @@ export default function FormularioVaga(){
             });
 
             if (response.ok){
-                alert("Vaga registrada com sucesso!");
+                const novaVagaDoServidor = await response.json();
+                adicionarVagaNaLista(novaVagaDoServidor);
+                setAbaAtiva('painel-empresa');
             }else{
                 alert("Erro ao enviar a vaga para o servidor.")
             }
@@ -80,11 +89,6 @@ export default function FormularioVaga(){
         }
         
     };
-
-
-    
-
-
     return(
         <div className='container-formulario'>
             <h2>Cadastrar Nova Vaga</h2>

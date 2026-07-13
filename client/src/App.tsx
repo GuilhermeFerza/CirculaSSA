@@ -105,7 +105,10 @@ export default function App() {
       />
 
       {abaAtiva === 'nova-vaga' && (
-        <FormularioVaga />
+        <FormularioVaga 
+          adicionarVagaNaLista={(novaVaga) => setVagas((estadoAnterior) => [...estadoAnterior, novaVaga])}
+          setAbaAtiva={setAbaAtiva}
+        />
       )}
 
       {abaAtiva === 'painel-empresa' && (
