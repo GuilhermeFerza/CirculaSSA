@@ -9,6 +9,7 @@ import FormularioVaga from './components/FormularioVaga';
 import PainelEmpresa from './components/PainelEmpresa';
 import VagasSalvas from './components/VagasSalvas';
 import Perfil from './components/Perfil';
+import DetalhesVaga from './components/DetalhesVaga';
 
 export interface Vaga {
   id: number;
@@ -72,16 +73,7 @@ export default function App() {
       .catch((erro) => console.error("Erro ao buscar vagas:", erro));
   }, []);
 
-  const favoritarVaga = (id: number) => {
-    const salvos = JSON.parse(localStorage.getItem('vagasSalvas') || '[]')
-    if(!salvos.includes(id)){
-      salvos.push(id);
-      localStorage.setItem('vagasSalvas', JSON.stringify(salvos));
-      alert('Vaga salva com sucesso nas suas listas!');
-    }else{
-      alert('Você já salvou esta vaga antes!')
-    }
-  }
+  
 
   useEffect(() => {
     buscarVagas(salvadorCentro[0], salvadorCentro[1], 5000);
@@ -126,34 +118,17 @@ export default function App() {
       )}
 
       {abaAtiva === 'perfil' && (
-        <div className="container-perfil">
           <Perfil 
             perfilUsuario={perfilUsuario} 
             sairDoPerfil={sairDoPerfil}
           />
-        </div>
       )}
 
       {vagaSelecionada && abaAtiva === 'mapa' && (
-        <>
-          <div className="overlay" onClick={() => setVagaSelecionada(null)}></div>
-          <div className="bottom-sheet">
-            <button className="botao-fechar" onClick={() => setVagaSelecionada(null)}>&times;</button>
-            <h2>{vagaSelecionada.titulo}</h2>
-            <span className="tag-tipo">{vagaSelecionada.tipo}</span>
-            <p className="info-empresa">
-              <strong>Empresa:</strong> {vagaSelecionada.empresa} &bull; <strong>Local:</strong> {vagaSelecionada.bairro}
-            </p>
-            <p className="descricao-vaga">{vagaSelecionada.descricao}</p>
-            <button
-              className='btn-submit'
-              style={{width: '100%', marginTop: '20px'}}
-              onClick={()=> favoritarVaga(vagaSelecionada.id)}
-            >
-              Salvar Vaga
-            </button>
-          </div>
-        </>
+        <DetalhesVaga 
+          setVagaSelecionada={setVagaSelecionada}
+          vagaSelecionada={vagaSelecionada}
+        />
       )}
 
       <MenuInferior
