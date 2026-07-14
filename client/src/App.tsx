@@ -27,7 +27,7 @@ export interface Vaga {
 export default function App() {
   const [vagas, setVagas] = useState<Vaga[]>([]);
   const [vagaSelecionada, setVagaSelecionada] = useState<Vaga | null>(null);
-  const [abaAtiva, setAbaAtiva] = useState('login');
+  const [abaAtiva, setAbaAtiva] = useState('on-board');
   const [perfilUsuario, setPerfilUsuario] = useState(()=>{
     return localStorage.getItem('perfilUsuario') || '';
   });
@@ -38,11 +38,7 @@ export default function App() {
   const salvadorCentro: [number, number] = [-12.9714, -38.5014];
 
 
-  const sairDoPerfil = () => {
-    localStorage.removeItem('perfilUsuario');
-    setPerfilUsuario('');
-    setAbaAtiva('mapa');
-  }
+  
 
   const alternarFiltro = (tipo: string) => {
     if (filtrosAtivos.includes(tipo)) {
@@ -81,12 +77,16 @@ export default function App() {
   }, [buscarVagas]);
 
   return (
+      
     <>
-    <Onboarding 
-      perfilUsuario={perfilUsuario}
-      setPerfilUsuario={setPerfilUsuario}
-      setAbaAtiva={setAbaAtiva}
-    />
+
+      {abaAtiva === 'on-board' && (
+        <Onboarding 
+          setPerfilUsuario={setPerfilUsuario}
+          setAbaAtiva={setAbaAtiva}
+        />
+      )}
+
       {abaAtiva === 'mapa' && (
         <>
           <MapaPrincipal 
@@ -119,6 +119,7 @@ export default function App() {
       {abaAtiva === 'login' && (
         <Login
           setAbaAtiva={setAbaAtiva}
+          setPerfilUsuario={setPerfilUsuario}
         />
       )}
 
@@ -158,14 +159,25 @@ export default function App() {
 
 
       {abaAtiva === 'salvas' && (
-        <VagasSalvas vagas={vagas} />
+        <>
+          <VagasSalvas vagas={vagas} />
+          <MenuInferior
+            perfilUsuario={perfilUsuario}
+            abaAtiva={abaAtiva}
+            setAbaAtiva={setAbaAtiva}
+            setMostrarFiltros={setMostrarFiltros}
+          />
+
+        </>
+        
       )}
 
       {abaAtiva === 'perfil' && (
         <>
           <Perfil 
             perfilUsuario={perfilUsuario} 
-            sairDoPerfil={sairDoPerfil}
+            setPerfilUsuario={setPerfilUsuario}
+            setAbaAtiva={setAbaAtiva}
           />
           <MenuInferior
             perfilUsuario={perfilUsuario}

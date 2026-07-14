@@ -81,7 +81,7 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 s 40px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.5);
   z-index: 10000;
   padding: 0 8px;
@@ -845,5 +845,4 @@ button:focus {
 .aviso.ativo{
   opacity: 1;
   max-height: 30px;
-  margin-top: 10px;
 }

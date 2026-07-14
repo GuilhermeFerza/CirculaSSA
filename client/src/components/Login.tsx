@@ -3,13 +3,14 @@ import React, { useState } from "react"
 
 interface LoginProps{
     setAbaAtiva: (saa: string) => void
+    setPerfilUsuario: (spu: string) => void
 }
 
-export default function Login({setAbaAtiva}:LoginProps){
+export default function Login({setAbaAtiva, setPerfilUsuario}:LoginProps){
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
+    const [aviso, setAviso] = useState("aviso")
 
     const handleSubmit = async (e: React.FormEvent) =>{
         e.preventDefault();
@@ -30,10 +31,15 @@ export default function Login({setAbaAtiva}:LoginProps){
             
             if(response.ok){
                 const data = await response.json();
-                localStorage.setItem('token', data.token)
-                setAbaAtiva('mapa')
+                localStorage.setItem('token', data.token);
+                const perfilEscolhido = localStorage.getItem('perfilUsuario');
+                if(perfilEscolhido === 'empresa'){
+                    setAbaAtiva('painel-empresa');
+                } else{
+                    setAbaAtiva('mapa')
+                }
             }else{
-                alert("Email ou senha incorreto")
+                setAviso("aviso ativo")
             }
         }catch(error){
             console.error("Erro na req:", error)
@@ -65,9 +71,9 @@ export default function Login({setAbaAtiva}:LoginProps){
                 </form>
                 
                 <div className="links-adicionais">
-                <p>senhas não coincidem</p>
+                <p className={aviso}>senhas não coincidem</p>
                 <a href="#">Esqueci minha senha</a>
-                <a href="#">Criar uma nova conta</a>
+                <a style={{cursor: 'pointer'}} onClick={(e)=>{e.preventDefault(); setAbaAtiva('register')}}>Criar uma nova conta</a>
                 </div>
             </div>
         </div>

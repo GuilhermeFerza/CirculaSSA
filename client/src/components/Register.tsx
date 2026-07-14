@@ -1,4 +1,4 @@
-import { AlertTriangle } from "lucide-react"
+import { AlertTriangle, TextCursor } from "lucide-react"
 import React, { useState } from "react"
 
 
@@ -82,7 +82,7 @@ export default function Login({setAbaAtiva}: LoginProps){
                 <div className="links-adicionais">
                 <p className={aviso}>senhas não coincidem</p>
                 <a href="#">Esqueci minha senha</a>
-                <a href="#">Criar uma nova conta</a>
+                <a style={{cursor: 'pointer'}} onClick={(e)=> {e.preventDefault(); setAbaAtiva('login')}}>Já tenho uma conta</a>
                 </div>
             </div>
         </div>

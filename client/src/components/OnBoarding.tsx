@@ -1,14 +1,12 @@
 
 interface OnBoardingProps{
-    perfilUsuario: string;
     setPerfilUsuario: (spu: string) => void
     setAbaAtiva: (saa: string) => void
 }
 
-export default function Onboarding( {perfilUsuario, setPerfilUsuario, setAbaAtiva} : OnBoardingProps){
+export default function Onboarding( { setPerfilUsuario, setAbaAtiva} : OnBoardingProps){
     return( 
         <>
-            {!perfilUsuario && (
                 <div className='boas-vindas-overlay'>
                     <h1>CirculaSSA</h1>
                     <p>Selecione o seu perfil pra começar:</p>
@@ -18,7 +16,7 @@ export default function Onboarding( {perfilUsuario, setPerfilUsuario, setAbaAtiv
                             onClick={() => {
                                 localStorage.setItem('perfilUsuario', 'candidato');
                                 setPerfilUsuario('candidato');
-                                setAbaAtiva('mapa')
+                                setAbaAtiva('login')
                             }}
                         >
                             Quero Encontrar Vagas
@@ -28,14 +26,13 @@ export default function Onboarding( {perfilUsuario, setPerfilUsuario, setAbaAtiv
                             onClick={()=>{
                                 localStorage.setItem('perfilUsuario', 'empresa');
                                 setPerfilUsuario('empresa');
-                                setAbaAtiva('painel-empresa');
+                                setAbaAtiva('login');
                             }}
                         >   
                             Quero Anunciar Vagas
                         </button>
                     </div>
                 </div>
-            )}
         </>
     )
 }

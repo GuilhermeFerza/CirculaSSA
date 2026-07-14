@@ -3,13 +3,21 @@ import { useEffect, useState } from 'react'
 
 
 interface PerfilProps{
-    perfilUsuario: string
-    sairDoPerfil: () => void    
+    perfilUsuario: string  
+    setPerfilUsuario: (spu: string) => void
+    setAbaAtiva: (saa: string) => void
 }
 
-export default function Perfil({perfilUsuario, sairDoPerfil}: PerfilProps){
+export default function Perfil({perfilUsuario, setPerfilUsuario, setAbaAtiva}: PerfilProps){
   
   const [nome, setNome] = useState()  
+
+  const sairDoPerfil = () => {
+    localStorage.removeItem('perfilUsuario');
+    localStorage.removeItem('token');
+    setPerfilUsuario('');
+    setAbaAtiva('on-board');
+  }
 
 
   const carregarDados = async ()=>{
