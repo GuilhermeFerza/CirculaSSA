@@ -1,52 +1,46 @@
 import { AlertTriangle } from "lucide-react"
 import React, { useState } from "react"
 
-
-
 interface LoginProps{
-    setAbaAtiva: (saa : string) => void
+    setAbaAtiva: (saa: string) => void
 }
 
-export default function Login({setAbaAtiva}: LoginProps){
+export default function Login({setAbaAtiva}:LoginProps){
 
-    const [name, setName]=useState('');
-    const [email, setEmail]=useState('');
-    const [password, setPassword]=useState('');
-    const [checkPass, setCheckPass] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    const [aviso, setAviso] = useState('aviso')
 
-    const handleSubmit = async (e: React.FormEvent)=>{
-        e.preventDefault()
+    const handleSubmit = async (e: React.FormEvent) =>{
+        e.preventDefault();
         const dadosUser = {
-            name,
             email,
-            password
+            password,
         }
         
-            try{
-            const response = await fetch("http://localhost:8080/api/register", {
-                method: "POST",
+
+        try{
+            const response = await fetch("http://localhost:8080/api/login", {
+                method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(dadosUser),
+                body: JSON.stringify(dadosUser)
             });
+            
             if(response.ok){
                 const data = await response.json();
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('perfilUsuario', 'empresa');
+                localStorage.setItem('token', data.token)
                 setAbaAtiva('mapa')
             }else{
-                alert("Falha ao criar usuario")
+                alert("Email ou senha incorreto")
             }
-        
-            }catch(error){
-                console.error("Erro na req:", error)
-                alert("Não foi possível conectar ao servidor.")
-            }   
-
+        }catch(error){
+            console.error("Erro na req:", error)
+            alert("Não foi possível conectar ao servidor.")
+        }
     }
+
     return(
         <div className="login-container">
             <div className="login-card">
@@ -54,10 +48,6 @@ export default function Login({setAbaAtiva}: LoginProps){
                 <p className="subtitulo">Acesse sua conta para continuar</p>
 
                 <form className="form-login" onSubmit={handleSubmit}>
-                    <div className="grupo-input">
-                        <label>Nome de Usuario</label>
-                        <input type="text" placeholder="Digite seu nome" value={name} onChange={(e)=> setName(e.target.value)} required />
-                    </div>
                    
                     <div className="grupo-input">
                         <label>E-mail</label>
@@ -68,11 +58,6 @@ export default function Login({setAbaAtiva}: LoginProps){
                         <label>Senha</label>
                         <input type="password" placeholder="Digite sua senha" value={password} onChange={(e)=> setPassword(e.target.value)} required />
                     </div>
-                    <div className="grupo-input">
-                        <label>Confirme a Senha</label>
-                        <input type="password" placeholder="Digite sua senha" value={checkPass} onChange={(e)=> setCheckPass(e.target.value)} required />
-                    </div>
-
 
                     <button type="submit" className="btn-submit">
                         Entrar
@@ -80,7 +65,7 @@ export default function Login({setAbaAtiva}: LoginProps){
                 </form>
                 
                 <div className="links-adicionais">
-                <p className={aviso}>senhas não coincidem</p>
+                <p>senhas não coincidem</p>
                 <a href="#">Esqueci minha senha</a>
                 <a href="#">Criar uma nova conta</a>
                 </div>

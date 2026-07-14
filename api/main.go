@@ -30,6 +30,12 @@ type User struct {
 	ID       int    `json:"id"`
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
+	Name     string `json:"name" binding:"required"`
+}
+
+type CredenciasLogin struct {
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 var jwtKey = []byte("CirculaSSA821")
@@ -144,7 +150,7 @@ func main() {
 
 		api.POST("/login", func(c *gin.Context) {
 
-			var credenciais User
+			var credenciais CredenciasLogin
 
 			if err := c.ShouldBindJSON(&credenciais); err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"erro": "Formato JSON invalido"})
@@ -193,7 +199,39 @@ func main() {
 
 		})
 
-		api.GET("/register", func(c *gin.Context) {
+		api.GET("/login", AuthMiddleware(), func(c *gin.Context) {
+
+			emailToken, existe := c.Get("userEmail")
+			if !existe {
+				c.JSON(http.StatusUnauthorized, gin.H{"erro": "Usuário não identificado"})
+				return
+			}
+
+			var idBanco int
+			var nameBanco string
+			var emailBanco string
+
+			sqlStatement :=
+				`
+				SELECT id, name, email FROM users WHERE email = $1
+			`
+
+			err := db.QueryRow(sqlStatement, emailToken).Scan(&idBanco, &nameBanco, &emailBanco)
+
+			if err != nil {
+				if err == sql.ErrNoRows {
+					c.JSON(http.StatusNotFound, gin.H{"erro": "Usuário não encontrado no banco"})
+					return
+				}
+				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao buscar usuario"})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{
+				"id":    idBanco,
+				"name":  nameBanco,
+				"email": emailBanco,
+			})
 
 		})
 		api.POST("/register", func(c *gin.Context) {
@@ -204,13 +242,13 @@ func main() {
 			}
 
 			sqlStatement := `
-				INSERT INTO users (email, password)
-				VALUES ($1, $2)
+				INSERT INTO users (email, password, name)
+				VALUES ($1, $2, $3)
 				RETURNING id
 			`
 
 			err := db.QueryRow(sqlStatement,
-				novoUser.Email, novoUser.Password,
+				novoUser.Email, novoUser.Password, novoUser.Name,
 			).Scan(&novoUser.ID)
 
 			if err != nil {

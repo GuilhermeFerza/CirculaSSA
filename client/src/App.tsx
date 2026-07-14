@@ -11,6 +11,7 @@ import VagasSalvas from './components/VagasSalvas';
 import Perfil from './components/Perfil';
 import DetalhesVaga from './components/DetalhesVaga';
 import Register from './components/Register';
+import Login from './components/Login';
 
 export interface Vaga {
   id: number;
@@ -26,7 +27,7 @@ export interface Vaga {
 export default function App() {
   const [vagas, setVagas] = useState<Vaga[]>([]);
   const [vagaSelecionada, setVagaSelecionada] = useState<Vaga | null>(null);
-  const [abaAtiva, setAbaAtiva] = useState('register');
+  const [abaAtiva, setAbaAtiva] = useState('login');
   const [perfilUsuario, setPerfilUsuario] = useState(()=>{
     return localStorage.getItem('perfilUsuario') || '';
   });
@@ -86,23 +87,41 @@ export default function App() {
       setPerfilUsuario={setPerfilUsuario}
       setAbaAtiva={setAbaAtiva}
     />
+      {abaAtiva === 'mapa' && (
+        <>
+          <MapaPrincipal 
+      
+            buscarVagas={buscarVagas}
+            abaAtiva={abaAtiva}
+            salvadorCentro={salvadorCentro}
+            vagasFiltradas={vagasFiltradas}
+            setVagaSelecionada = {setVagaSelecionada}
+            mostrarFiltros = {mostrarFiltros}
+            filtrosAtivos = {filtrosAtivos}
+            alternarFiltro = {alternarFiltro}
+            bairrosDisponiveis = {bairrosDisponiveis}
+            mostrarBairro = {mostrarBairro}
+            setMostrarBairro = {setMostrarBairro}
+            setMostrarFiltros = {setMostrarFiltros}
+          
+          />
+          <MenuInferior
+            perfilUsuario={perfilUsuario}
+            abaAtiva={abaAtiva}
+            setAbaAtiva={setAbaAtiva}
+            setMostrarFiltros={setMostrarFiltros}
+          />
+        </>
 
-      <MapaPrincipal 
+      )}
       
-        buscarVagas={buscarVagas}
-        abaAtiva={abaAtiva}
-        salvadorCentro={salvadorCentro}
-        vagasFiltradas={vagasFiltradas}
-        setVagaSelecionada = {setVagaSelecionada}
-        mostrarFiltros = {mostrarFiltros}
-        filtrosAtivos = {filtrosAtivos}
-        alternarFiltro = {alternarFiltro}
-        bairrosDisponiveis = {bairrosDisponiveis}
-        mostrarBairro = {mostrarBairro}
-        setMostrarBairro = {setMostrarBairro}
-        setMostrarFiltros = {setMostrarFiltros}
-      
-      />
+
+      {abaAtiva === 'login' && (
+        <Login
+          setAbaAtiva={setAbaAtiva}
+        />
+      )}
+
 
       {abaAtiva === 'register' && (
         <Register 
@@ -111,14 +130,30 @@ export default function App() {
       )}
 
       {abaAtiva === 'nova-vaga' && (
-        <FormularioVaga 
-          adicionarVagaNaLista={(novaVaga) => setVagas((estadoAnterior) => [...estadoAnterior, novaVaga])}
-          setAbaAtiva={setAbaAtiva}
-        />
+          <>
+            <FormularioVaga 
+              adicionarVagaNaLista={(novaVaga) => setVagas((estadoAnterior) => [...estadoAnterior, novaVaga])}
+              setAbaAtiva={setAbaAtiva}  
+            />
+            <MenuInferior
+              perfilUsuario={perfilUsuario}
+              abaAtiva={abaAtiva}
+              setAbaAtiva={setAbaAtiva}
+              setMostrarFiltros={setMostrarFiltros}
+            />
+          </>
       )}
 
       {abaAtiva === 'painel-empresa' && (
-        <PainelEmpresa />
+        <>
+          <PainelEmpresa />
+          <MenuInferior
+            perfilUsuario={perfilUsuario}
+            abaAtiva={abaAtiva}
+            setAbaAtiva={setAbaAtiva}
+            setMostrarFiltros={setMostrarFiltros}
+          />
+        </>
       )}
 
 
@@ -127,10 +162,18 @@ export default function App() {
       )}
 
       {abaAtiva === 'perfil' && (
+        <>
           <Perfil 
             perfilUsuario={perfilUsuario} 
             sairDoPerfil={sairDoPerfil}
           />
+          <MenuInferior
+            perfilUsuario={perfilUsuario}
+            abaAtiva={abaAtiva}
+            setAbaAtiva={setAbaAtiva}
+            setMostrarFiltros={setMostrarFiltros}
+          />
+        </>
       )}
 
       {vagaSelecionada && abaAtiva === 'mapa' && (
@@ -147,8 +190,6 @@ export default function App() {
           />
         </>
       )}
-
-      
     </>
   );
 }
