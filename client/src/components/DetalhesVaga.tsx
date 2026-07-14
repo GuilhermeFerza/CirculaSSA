@@ -7,15 +7,36 @@ interface DetalhesVagaProps{
     vagaSelecionada: Vaga;
 }
 
-const favoritarVaga = (id: number) => {
-    const salvos = JSON.parse(localStorage.getItem('vagasSalvas') || '[]')
-    if(!salvos.includes(id)){
-      salvos.push(id);
-      localStorage.setItem('vagasSalvas', JSON.stringify(salvos));
-      alert('Vaga salva com sucesso nas suas listas!');
-    }else{
-      alert('Você já salvou esta vaga antes!')
+const favoritarVaga = async (id: number) => {
+    const token = localStorage.getItem('token');
+
+    if(!token){
+      alert('Você precisa estar logado para salvar vagas!');
+      return;
     }
+
+    try{
+      const response = await fetch('http://localhost:8080/api/salvas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ vaga_id: id})
+      });
+
+      if(response.status === 201){
+        alert("Vaga salva com sucesso!")
+      }else if(response.status === 409){
+        alert("Você já salvou está vaga antes!");
+      }else{
+        alert('Erro ao salvar a vaga.');
+      }
+    }catch(error){
+      console.error("Erro ao favoritar:", error);
+      alert('Falha de conexão com o servidor');
+    }
+
   }
 
 export default function DetalhesVaga({setVagaSelecionada, vagaSelecionada}: DetalhesVagaProps){

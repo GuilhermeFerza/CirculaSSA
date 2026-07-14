@@ -160,7 +160,7 @@ export default function App() {
 
       {abaAtiva === 'salvas' && (
         <>
-          <VagasSalvas vagas={vagas} />
+          <VagasSalvas />
           <MenuInferior
             perfilUsuario={perfilUsuario}
             abaAtiva={abaAtiva}

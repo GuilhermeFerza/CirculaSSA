@@ -2,25 +2,52 @@ import { useEffect, useState } from "react"
 import { Vaga } from "../App"
 import { Bookmark, MapPin, Trash2 } from 'lucide-react'
 
-interface VagaSalvasProps{
-    vagas: Vaga[]
-}
-
-export default function VagasSalvas({vagas}:VagaSalvasProps){
+export default function VagasSalvas(){
+    const [vagasFavoritas, setVagasFavoritas] = useState<Vaga[]>([])
     const [idsSalvos, setIdsSalvos] = useState<number[]>([]);
 
+    const buscarVagasSalvas = async ()=>{
+        const token = localStorage.getItem('token')
+        if(!token) return;
+    
+        try{
+            const response = await fetch('http://localhost:8080/api/salvas',{
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok){
+                const dados = await response.json();
+                setVagasFavoritas(dados);
+            }
+        }catch(error){
+            console.error("Erro ao carregar vagas salvas: ", error);
+        }
+    }
+
     useEffect(()=>{
-        const salvos = JSON.parse(localStorage.getItem('vagasSalvas') || '[]');
-        setIdsSalvos(salvos);
+        buscarVagasSalvas();        
     },[]);
     
-    const removerVaga = (id: number) =>{
-        const novaLista = idsSalvos.filter(vagaId => vagaId !== id);
-        setIdsSalvos(novaLista);
-        localStorage.setItem('vagasSalvas', JSON.stringify(novaLista))
-    };
+    const removerVaga = async (id: number) =>{
+        const token = localStorage.getItem('token');
+        try{
+            const response = await fetch(`http://localhost:8080/api/salvas/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-    const vagasFavoritas = vagas.filter(vaga => idsSalvos.includes(vaga.id));
+            if (response.ok){
+                setVagasFavoritas(estadoAtual => estadoAtual.filter(vaga => vaga.id !== id));
+            }
+        }catch(error){
+            console.error("Erro ao remover", error)
+        }
+    };
 
     return(
         <div className="container-formulario">
@@ -30,10 +57,12 @@ export default function VagasSalvas({vagas}:VagaSalvasProps){
                 {vagasFavoritas.length === 0 ? (
                     <div className="estado-vazio">
                         <Bookmark size={48} color="#cbd5e1"/>
+                        <p>Você ainda não salvou nenhuma vaga.</p>
                     </div>
                 ) : (
                     vagasFavoritas.map((vaga) => (
                         <div key={vaga.id} className="card-vaga-empresa">
+                            {/* ... O miolo do seu card continua idêntico ... */}
                             <div className="cabecalho-card">
                                 <h3>{vaga.titulo}</h3>
                                 <span className="tag-tipo">{vaga.tipo}</span>
