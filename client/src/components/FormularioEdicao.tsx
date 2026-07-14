@@ -57,11 +57,14 @@ export default function FormularioEdicao({ vagaParaEditar, fecharEdicao, atualiz
             longitude: localizacao.lon
         };
 
+        const token = localStorage.getItem('token')
+
         try{
             const response = await fetch(`http://localhost:8080/api/vaga/${vagaParaEditar.id}`, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(dadosVaga)
             });

@@ -21,7 +21,6 @@ export default function Login({setAbaAtiva}: LoginProps){
             password
         }
         
-        if (checkPass == password){
             try{
             const response = await fetch("http://localhost:8080/api/register", {
                 method: "POST",
@@ -31,19 +30,19 @@ export default function Login({setAbaAtiva}: LoginProps){
                 body: JSON.stringify(dadosUser),
             });
             if(response.ok){
+                const data = await response.json();
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('perfilUsuario', 'empresa');
                 setAbaAtiva('mapa')
             }else{
-                alert("Erro ao realizar registro no servidor.")
+                alert("E-mail ou senha incorretos.")
             }
         
             }catch(error){
                 console.error("Erro na req:", error)
                 alert("Não foi possível conectar ao servidor.")
-            }
+            }   
 
-        }else{
-            setAviso('aviso ativo')
-        }
     }
     return(
         <div className="login-container">

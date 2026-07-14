@@ -67,11 +67,14 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
         console.log("Vaga pronta para ir no backend:", dadosVagas)
         alert("Vaga registrada com sucesso!");
         
+        const token = localStorage.getItem('token')
+
         try{
             const response = await fetch("http://localhost:8080/api/vaga", {
                 method: "POST",
                 headers: {
                     "Content-Type":  "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(dadosVagas),
             });

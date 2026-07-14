@@ -25,14 +25,19 @@ export default function PainelEmpresa(){
         const confirmacao = window.confirm("Confirma a exclusão desta vaga?");
         if(!confirmacao) return;
 
+        const token = localStorage.getItem('token')
+
         try{
             const response = await fetch(`http://localhost:8080/api/vaga/${id}`,{
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             });
             if(response.ok){
                 setMinhasVagas(estadoAtual => estadoAtual.filter(vaga => vaga.id !== id));
             }else{
-                alert("Falha ao excluir vaga no servidor.")
+                alert("Falha ao excluir vaga no servidor. Você está autorizado?")
             }
         }catch(error){
             console.error("Erro na req DELETE:", error)
