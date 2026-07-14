@@ -10,7 +10,7 @@ import PainelEmpresa from './components/PainelEmpresa';
 import VagasSalvas from './components/VagasSalvas';
 import Perfil from './components/Perfil';
 import DetalhesVaga from './components/DetalhesVaga';
-import Login from './components/Login';
+import Register from './components/Register';
 
 export interface Vaga {
   id: number;
@@ -34,7 +34,6 @@ export default function App() {
   const [filtrosAtivos, setFiltrosAtivos] = useState<string[]>(['Estágio', 'CLT', 'Jovem Aprendiz', 'Mutirão']);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [mostrarBairro, setMostrarBairro] = useState<string>('');
-  const timerRef = useRef<number | null>(null);
   const salvadorCentro: [number, number] = [-12.9714, -38.5014];
 
 
@@ -106,7 +105,7 @@ export default function App() {
       />
 
       {abaAtiva === 'register' && (
-        <Login 
+        <Register 
           setAbaAtiva={setAbaAtiva}
         />
       )}
