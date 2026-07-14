@@ -23,6 +23,12 @@ type Vaga struct {
 	Longitude float64 `json:"longitude"`
 }
 
+type User struct {
+	ID       int    `json:"id"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
 func main() {
 
 	connStr := "user=postgres password=root dbname=CirculaSSA sslmode=disable"
@@ -202,6 +208,34 @@ func main() {
 
 			c.JSON(http.StatusOK, gin.H{"mensagem": "Vaga atualizada com sucesso"})
 		})
+
+		api.GET("/register", func(c *gin.Context) {
+
+		})
+		api.POST("/register", func(c *gin.Context) {
+			var novoUser User
+			if err := c.ShouldBindJSON(&novoUser); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"erro": "Formato de JSON invalido", "detalhes": err.Error()})
+				return
+			}
+
+			sqlStatement := `
+				INSERT INTO users (email, password)
+				VALUES ($1, $2)
+				RETURNING id
+			`
+
+			err := db.QueryRow(sqlStatement,
+				novoUser.Email, novoUser.Password,
+			).Scan(&novoUser.ID)
+
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao salvar no banco", "detalhes": err.Error()})
+				return
+			}
+			c.JSON(http.StatusOK, novoUser)
+		})
+
 	}
 	r.Run(":8080")
 

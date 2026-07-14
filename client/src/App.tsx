@@ -10,6 +10,7 @@ import PainelEmpresa from './components/PainelEmpresa';
 import VagasSalvas from './components/VagasSalvas';
 import Perfil from './components/Perfil';
 import DetalhesVaga from './components/DetalhesVaga';
+import Login from './components/Login';
 
 export interface Vaga {
   id: number;
@@ -25,7 +26,7 @@ export interface Vaga {
 export default function App() {
   const [vagas, setVagas] = useState<Vaga[]>([]);
   const [vagaSelecionada, setVagaSelecionada] = useState<Vaga | null>(null);
-  const [abaAtiva, setAbaAtiva] = useState('mapa');
+  const [abaAtiva, setAbaAtiva] = useState('register');
   const [perfilUsuario, setPerfilUsuario] = useState(()=>{
     return localStorage.getItem('perfilUsuario') || '';
   });
@@ -104,6 +105,12 @@ export default function App() {
       
       />
 
+      {abaAtiva === 'register' && (
+        <Login 
+          setAbaAtiva={setAbaAtiva}
+        />
+      )}
+
       {abaAtiva === 'nova-vaga' && (
         <FormularioVaga 
           adicionarVagaNaLista={(novaVaga) => setVagas((estadoAnterior) => [...estadoAnterior, novaVaga])}
@@ -128,18 +135,21 @@ export default function App() {
       )}
 
       {vagaSelecionada && abaAtiva === 'mapa' && (
-        <DetalhesVaga 
-          setVagaSelecionada={setVagaSelecionada}
-          vagaSelecionada={vagaSelecionada}
-        />
+        <>
+          <DetalhesVaga 
+            setVagaSelecionada={setVagaSelecionada}
+            vagaSelecionada={vagaSelecionada}
+          />
+          <MenuInferior
+            perfilUsuario={perfilUsuario}
+            abaAtiva={abaAtiva}
+            setAbaAtiva={setAbaAtiva}
+            setMostrarFiltros={setMostrarFiltros}
+          />
+        </>
       )}
 
-      <MenuInferior
-        perfilUsuario={perfilUsuario}
-        abaAtiva={abaAtiva}
-        setAbaAtiva={setAbaAtiva}
-        setMostrarFiltros={setMostrarFiltros}
-      />
+      
     </>
   );
 }
