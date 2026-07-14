@@ -6,9 +6,12 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	_ "github.com/lib/pq"
 )
 
@@ -27,6 +30,40 @@ type User struct {
 	ID       int    `json:"id"`
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
+}
+
+var jwtKey = []byte("CirculaSSA821")
+
+type Claims struct {
+	Email string `json:"email"`
+	jwt.RegisteredClaims
+}
+
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenHeader := c.GetHeader("Authorization")
+
+		if tokenHeader == "" || !strings.HasPrefix(tokenHeader, "Bearer ") {
+			c.JSON(http.StatusUnauthorized, gin.H{"erro": "Token nao fornecido"})
+			c.Abort()
+			return
+		}
+
+		tokenStrings := strings.TrimPrefix(tokenHeader, "Bearer ")
+		claims := &Claims{}
+
+		token, err := jwt.ParseWithClaims(tokenStrings, claims, func(token *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+
+		if err != nil || !token.Valid {
+			c.JSON(http.StatusUnauthorized, gin.H{"erro": "Token Invalido"})
+			c.Abort()
+			return
+		}
+		c.Set("userEmail", claims.Email)
+		c.Next()
+	}
 }
 
 func main() {
@@ -104,7 +141,91 @@ func main() {
 			}
 			c.JSON(http.StatusOK, vagas)
 		})
-		api.POST("/vaga", func(c *gin.Context) {
+
+		api.POST("/login", func(c *gin.Context) {
+
+			var credenciais User
+
+			if err := c.ShouldBindJSON(&credenciais); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"erro": "Formato JSON invalido"})
+				return
+			}
+
+			var idBanco int
+			var senhaBanco string
+
+			sqlStatement := `
+				SELECT id, password FROM users WHERE email = $1
+			`
+
+			err := db.QueryRow(sqlStatement, credenciais.Email).Scan(&idBanco, &senhaBanco)
+
+			if err != nil {
+				if err == sql.ErrNoRows {
+					c.JSON(http.StatusUnauthorized, gin.H{"erro": "E-mail ou senha incorretos"})
+					return
+				}
+				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Erro no banco de dados"})
+			}
+
+			if credenciais.Password != senhaBanco {
+				c.JSON(http.StatusUnauthorized, gin.H{"erro": "Email ou senha incorretos"})
+				return
+			}
+
+			tempoExpiracao := time.Now().Add(24 * time.Hour)
+			claims := &Claims{
+				Email: credenciais.Email,
+				RegisteredClaims: jwt.RegisteredClaims{
+					ExpiresAt: jwt.NewNumericDate(tempoExpiracao),
+				},
+			}
+
+			token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+			tokenString, err := token.SignedString(jwtKey)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Erro ao gerar token"})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{"token": tokenString})
+
+		})
+
+		api.GET("/register", func(c *gin.Context) {
+
+		})
+		api.POST("/register", func(c *gin.Context) {
+			var novoUser User
+			if err := c.ShouldBindJSON(&novoUser); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"erro": "Formato de JSON invalido", "detalhes": err.Error()})
+				return
+			}
+
+			sqlStatement := `
+				INSERT INTO users (email, password)
+				VALUES ($1, $2)
+				RETURNING id
+			`
+
+			err := db.QueryRow(sqlStatement,
+				novoUser.Email, novoUser.Password,
+			).Scan(&novoUser.ID)
+
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao salvar no banco", "detalhes": err.Error()})
+				return
+			}
+			c.JSON(http.StatusOK, novoUser)
+		})
+
+	}
+
+	rotasProtegidas := api.Group("/vaga")
+	rotasProtegidas.Use(AuthMiddleware())
+	{
+		rotasProtegidas.POST("", func(c *gin.Context) {
 			var novaVaga Vaga
 
 			if err := c.ShouldBindJSON(&novaVaga); err != nil {
@@ -136,32 +257,8 @@ func main() {
 			}
 
 			c.JSON(http.StatusCreated, novaVaga)
-
 		})
-
-		api.DELETE("/vaga/:id", func(c *gin.Context) {
-			idStr := c.Param("id")
-			id, err := strconv.Atoi(idStr)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"erro": "ID invalido"})
-				return
-			}
-			sqlStatement := `DELETE FROM vagas WHERE id = $1`
-			res, err := db.Exec(sqlStatement, id)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao excluir vaga do banco de dados"})
-				return
-			}
-
-			count, err := res.RowsAffected()
-			if err != nil || count == 0 {
-				c.JSON(http.StatusNotFound, gin.H{"erro": "Vaga nao encontrada"})
-				return
-			}
-			c.JSON(http.StatusOK, gin.H{"mensagem": "Vaga excluida com sucesso"})
-		})
-
-		api.PUT("/vaga/:id", func(c *gin.Context) {
+		rotasProtegidas.PUT("/:id", func(c *gin.Context) {
 			idStr := c.Param("id")
 			id, err := strconv.Atoi(idStr)
 			if err != nil {
@@ -207,36 +304,31 @@ func main() {
 			}
 
 			c.JSON(http.StatusOK, gin.H{"mensagem": "Vaga atualizada com sucesso"})
-		})
-
-		api.GET("/register", func(c *gin.Context) {
 
 		})
-		api.POST("/register", func(c *gin.Context) {
-			var novoUser User
-			if err := c.ShouldBindJSON(&novoUser); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"erro": "Formato de JSON invalido", "detalhes": err.Error()})
-				return
-			}
-
-			sqlStatement := `
-				INSERT INTO users (email, password)
-				VALUES ($1, $2)
-				RETURNING id
-			`
-
-			err := db.QueryRow(sqlStatement,
-				novoUser.Email, novoUser.Password,
-			).Scan(&novoUser.ID)
-
+		rotasProtegidas.DELETE("/:id", func(c *gin.Context) {
+			idStr := c.Param("id")
+			id, err := strconv.Atoi(idStr)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao salvar no banco", "detalhes": err.Error()})
+				c.JSON(http.StatusBadRequest, gin.H{"erro": "ID invalido"})
 				return
 			}
-			c.JSON(http.StatusOK, novoUser)
-		})
+			sqlStatement := `DELETE FROM vagas WHERE id = $1`
+			res, err := db.Exec(sqlStatement, id)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao excluir vaga do banco de dados"})
+				return
+			}
 
+			count, err := res.RowsAffected()
+			if err != nil || count == 0 {
+				c.JSON(http.StatusNotFound, gin.H{"erro": "Vaga nao encontrada"})
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{"mensagem": "Vaga excluida com sucesso"})
+		})
 	}
+
 	r.Run(":8080")
 
 }
