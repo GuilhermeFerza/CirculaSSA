@@ -830,3 +830,20 @@ button:focus {
   color: #0284c7;
   text-decoration: underline;
 }
+
+.aviso{
+  color: red;
+  font-size: 0.8rem;
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0;
+  overflow: hidden;
+  
+  transition: opacity 200ms ease, max-height 200ms ease, margin-top 200ms ease;
+}
+
+.aviso.ativo{
+  opacity: 1;
+  max-height: 30px;
+  margin-top: 10px;
+}
