@@ -18,6 +18,7 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
     const [tipo, setTipo] = useState('CLT');
     const [bairro, setBairro] = useState('');
     const [linkContato, setLinkContato] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const[localizacao, setLocalizacao] = useState<{lat: number, lon: number} | null>(null)
     const [buscandoGps, setBuscandoGps] = useState(false);
@@ -72,6 +73,8 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
         
         const token = localStorage.getItem('token')
 
+        setIsSubmitting(true);
+
         try{
             const response = await fetchAuth("http://localhost:8080/api/vaga", {
                 method: "POST",
@@ -93,7 +96,7 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
             console.error("Erro na requisicao: ", error);
             toast.error("Não foi possível conectar ao servidor.");
         }
-        
+        setIsSubmitting(false);  
     };
     return(
         <div className='container-formulario'>
@@ -160,7 +163,7 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
                 </div>
 
                     <button type='submit' className='btn-submit'>
-                        <Send size={20} /> Anunciar Vaga
+                        <Send size={20} /> {isSubmitting ? "Enviando..." : "Anunciar Vaga"}
                     </button>
             </form>
         </div>
