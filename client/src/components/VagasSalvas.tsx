@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Vaga } from "../App"
 import { Bookmark, MapPin, Trash2 } from 'lucide-react'
+import { fetchAuth } from "../utils/api";
 
 export default function VagasSalvas(){
     const [vagasFavoritas, setVagasFavoritas] = useState<Vaga[]>([])
@@ -11,7 +12,7 @@ export default function VagasSalvas(){
         if(!token) return;
     
         try{
-            const response = await fetch('http://localhost:8080/api/salvas',{
+            const response = await fetchAuth('http://localhost:8080/api/salvas',{
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`

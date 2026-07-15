@@ -3,6 +3,7 @@ import { Briefcase, Edit, MapPin, Trash2 } from 'lucide-react'
 import FormularioEdicao from "./FormularioEdicao";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { fetchAuth } from "../utils/api";
 
 export default function PainelEmpresa(){
 
@@ -18,7 +19,7 @@ export default function PainelEmpresa(){
         }
 
         try{
-            const response = await fetch('http://localhost:8080/api/vaga/minhas', {
+            const response = await fetchAuth('http://localhost:8080/api/vaga/minhas', {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",
@@ -50,7 +51,7 @@ export default function PainelEmpresa(){
         const token = localStorage.getItem('token')
 
         try{
-            const response = await fetch(`http://localhost:8080/api/vaga/${id}`,{
+            const response = await fetchAuth(`http://localhost:8080/api/vaga/${id}`,{
                 method: 'DELETE',
                 headers: {
                     "Authorization": `Bearer ${token}`

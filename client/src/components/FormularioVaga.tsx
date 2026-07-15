@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { CheckCircle, MapPin, Send } from 'lucide-react'
 import { Vaga } from '../App';
 import toast from 'react-hot-toast';
+import { fetchAuth } from '../utils/api';
 
 interface FormularioVagaProps{
     adicionarVagaNaLista: (vaga: Vaga) => void;
@@ -72,7 +73,7 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
         const token = localStorage.getItem('token')
 
         try{
-            const response = await fetch("http://localhost:8080/api/vaga", {
+            const response = await fetchAuth("http://localhost:8080/api/vaga", {
                 method: "POST",
                 headers: {
                     "Content-Type":  "application/json",

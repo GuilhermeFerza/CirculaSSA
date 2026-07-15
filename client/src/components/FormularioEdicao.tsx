@@ -2,6 +2,7 @@ import { LogIn, MapPin, Save, X } from 'lucide-react'
 import { Vaga } from '../App';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { fetchAuth } from '../utils/api';
 
 interface FormularioEdicaoProps{
     vagaParaEditar: Vaga;
@@ -62,7 +63,7 @@ export default function FormularioEdicao({ vagaParaEditar, fecharEdicao, atualiz
         const token = localStorage.getItem('token')
 
         try{
-            const response = await fetch(`http://localhost:8080/api/vaga/${vagaParaEditar.id}`, {
+            const response = await fetchAuth(`http://localhost:8080/api/vaga/${vagaParaEditar.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

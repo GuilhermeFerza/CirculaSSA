@@ -1,6 +1,6 @@
 import { User } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
+import { fetchAuth } from '../utils/api'
 
 interface PerfilProps{
     perfilUsuario: string  
@@ -27,7 +27,7 @@ export default function Perfil({perfilUsuario, setPerfilUsuario, setAbaAtiva}: P
       return;
     }
     try{
-      const response = await fetch("http://localhost:8080/api/login", {
+      const response = await fetchAuth("http://localhost:8080/api/login", {
         method: 'GET',
         headers: {
           "Content-Type": "application/json",

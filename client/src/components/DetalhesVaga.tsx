@@ -1,6 +1,7 @@
 import {} from 'lucide-react'
 import { Vaga } from '../App'
 import toast from 'react-hot-toast';
+import { fetchAuth } from '../utils/api';
 
 interface DetalhesVagaProps{
     setVagaSelecionada : (vaga: Vaga | null) => void;
@@ -16,7 +17,7 @@ const favoritarVaga = async (id: number) => {
     }
 
     try{
-      const response = await fetch('http://localhost:8080/api/salvas', {
+      const response = await fetchAuth('http://localhost:8080/api/salvas', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
