@@ -1,0 +1,22 @@
+# Variáveis de ambiente
+.env
+api/.env
+
+# Dependências Node (na pasta client)
+client/node_modules/
+client/dist/
+
+# Dependências Go (na pasta api)
+api/bin/
+api/pkg/
+
+# Arquivos de sistema e IDEs
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+# Arquivos temporários
+*.exe
+*.out
+*.test

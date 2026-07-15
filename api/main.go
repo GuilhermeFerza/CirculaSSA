@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -12,6 +13,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -86,7 +88,13 @@ func AuthMiddleware() gin.HandlerFunc {
 
 func main() {
 
-	connStr := "user=postgres password=root dbname=CirculaSSA sslmode=disable"
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Erro ao carregar arquivo .env")
+	}
+
+	connStr := os.Getenv("DB_CONN_STR")
+	jwtKey := []byte(os.Getenv("JWT_SECRET_KEY"))
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
