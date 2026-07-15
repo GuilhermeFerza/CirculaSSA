@@ -153,6 +153,7 @@ func main() {
 			}
 
 			if err != nil {
+				log.Printf("[SECURITY/ERROR] Rota: %s | Erro: %v | IP: %s", c.Request.URL.Path, err, c.ClientIP())
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao buscar vagas"})
 				return
 			}
@@ -196,6 +197,7 @@ func main() {
 					c.JSON(http.StatusUnauthorized, gin.H{"erro": "E-mail ou senha incorretos"})
 					return
 				}
+				log.Printf("[SECURITY/ERROR] Rota: %s | Erro: %v | IP: %s", c.Request.URL.Path, err, c.ClientIP())
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Erro no banco de dados"})
 				return
 			}
@@ -217,6 +219,7 @@ func main() {
 
 			tokenString, err := token.SignedString(jwtKey)
 			if err != nil {
+				log.Printf("[SECURITY/ERROR] Rota: %s | Erro: %v | IP: %s", c.Request.URL.Path, err, c.ClientIP())
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Erro ao gerar token"})
 				return
 			}
@@ -249,6 +252,7 @@ func main() {
 					c.JSON(http.StatusNotFound, gin.H{"erro": "Usuário não encontrado no banco"})
 					return
 				}
+				log.Printf("[SECURITY/ERROR] Rota: %s | Erro: %v | IP: %s", c.Request.URL.Path, err, c.ClientIP())
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao buscar usuario"})
 				return
 			}
@@ -269,6 +273,7 @@ func main() {
 
 			hashedPassword, err := HashPassword(novoUser.Password)
 			if err != nil {
+				log.Printf("[SECURITY/ERROR] Rota: %s | Erro: %v | IP: %s", c.Request.URL.Path, err, c.ClientIP())
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao processar a senha"})
 				return
 			}
@@ -284,6 +289,7 @@ func main() {
 			).Scan(&novoUser.ID)
 
 			if err != nil {
+				log.Printf("[SECURITY/ERROR] Rota: %s | Erro: %v | IP: %s", c.Request.URL.Path, err, c.ClientIP())
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao salvar no banco", "detalhes": err.Error()})
 				return
 			}
@@ -326,6 +332,7 @@ func main() {
 			).Scan(&novaVaga.ID)
 
 			if err != nil {
+				log.Printf("[SECURITY/ERROR] Rota: %s | Erro: %v | IP: %s", c.Request.URL.Path, err, c.ClientIP())
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao salvar no banco", "detalhes": err.Error()})
 				return
 			}
@@ -342,6 +349,7 @@ func main() {
 			`
 			rows, err := db.Query(query, emailToken)
 			if err != nil {
+				log.Printf("[SECURITY/ERROR] Rota: %s | Erro: %v | IP: %s", c.Request.URL.Path, err, c.ClientIP())
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao buscar suas vagas"})
 				return
 			}
@@ -400,6 +408,7 @@ func main() {
 				emailToken,
 			)
 			if err != nil {
+				log.Printf("[SECURITY/ERROR] Rota: %s | Erro: %v | IP: %s", c.Request.URL.Path, err, c.ClientIP())
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Vaga nao encontrada"})
 				return
 			}
@@ -429,6 +438,7 @@ func main() {
 			`
 			res, err := db.Exec(sqlStatement, id, emailToken)
 			if err != nil {
+				log.Printf("[SECURITY/ERROR] Rota: %s | Erro: %v | IP: %s", c.Request.URL.Path, err, c.ClientIP())
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao excluir vaga do banco de dados"})
 				return
 			}
@@ -467,6 +477,7 @@ func main() {
 					c.JSON(http.StatusConflict, gin.H{"erro": "Vaga ja foi salva anteriormente"})
 					return
 				}
+				log.Printf("[SECURITY/ERROR] Rota: %s | Erro: %v | IP: %s", c.Request.URL.Path, err, c.ClientIP())
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Erro ao salvar vaga no banco"})
 				return
 			}
@@ -485,6 +496,7 @@ func main() {
 			`
 			rows, err := db.Query(query, emailToken)
 			if err != nil {
+				log.Printf("[SECURITY/ERROR] Rota: %s | Erro: %v | IP: %s", c.Request.URL.Path, err, c.ClientIP())
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao buscar vagas salvas"})
 				return
 			}
@@ -519,6 +531,7 @@ func main() {
 			`
 			_, err = db.Exec(sqlStatement, emailToken, vagaID)
 			if err != nil {
+				log.Printf("[SECURITY/ERROR] Rota: %s | Erro: %v | IP: %s", c.Request.URL.Path, err, c.ClientIP())
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Erro ao remover vaga"})
 				return
 			}
