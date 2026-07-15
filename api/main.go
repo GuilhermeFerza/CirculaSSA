@@ -131,7 +131,7 @@ func main() {
 				}
 
 				query := `
-						SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude
+						SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato
 						FROM vagas
 						WHERE ST_DWithin(
 							geom::geography,
