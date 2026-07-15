@@ -1,5 +1,5 @@
-import { AlertTriangle } from "lucide-react"
 import React, { useState } from "react"
+import toast from "react-hot-toast"
 
 interface LoginProps{
     setAbaAtiva: (saa: string) => void
@@ -43,7 +43,7 @@ export default function Login({setAbaAtiva, setPerfilUsuario}:LoginProps){
             }
         }catch(error){
             console.error("Erro na req:", error)
-            alert("Não foi possível conectar ao servidor.")
+            toast.error("Não foi possível conectar ao servidor.")
         }
     }
 

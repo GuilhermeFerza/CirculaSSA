@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { CheckCircle, MapPin, Send } from 'lucide-react'
 import { Vaga } from '../App';
-
+import toast from 'react-hot-toast';
 
 interface FormularioVagaProps{
     adicionarVagaNaLista: (vaga: Vaga) => void;
@@ -37,12 +37,12 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
                 },
                 (erro) => {
                     console.error("Erro no GPS:", erro);
-                    alert("Não conseguimos acessar sua localização. Verifique as permissões do navegador.");
+                    toast.error("Não conseguimos acessar sua localização. Verifique as permissões do navegador.");
                     setBuscandoGps(false);
                 }
             );
         }else{
-            alert("Seu navegador não suporta GPS.")
+            toast.error("Seu navegador não suporta GPS.")
             setBuscandoGps(false)
         }
     };
@@ -51,7 +51,7 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
         e.preventDefault();
 
         if(!localizacao){
-            alert("Por favor, capture a localizacao da vaga primeiro!");
+            toast.error("Por favor, capture a localizacao da vaga primeiro!");
             return;
         }
 
@@ -67,7 +67,7 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
         };
 
         console.log("Vaga pronta para ir no backend:", dadosVagas)
-        alert("Vaga registrada com sucesso!");
+        toast.success("Vaga registrada com sucesso!");
         
         const token = localStorage.getItem('token')
 
@@ -86,11 +86,11 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
                 adicionarVagaNaLista(novaVagaDoServidor);
                 setAbaAtiva('painel-empresa');
             }else{
-                alert("Erro ao enviar a vaga para o servidor.")
+                toast.error("Erro ao enviar a vaga para o servidor.")
             }
         } catch(error){
             console.error("Erro na requisicao: ", error);
-            alert("Não foi possível conectar ao servidor.");
+            toast.error("Não foi possível conectar ao servidor.");
         }
         
     };

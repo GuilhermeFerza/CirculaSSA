@@ -2,6 +2,7 @@ import { Vaga } from "../App";
 import { Briefcase, Edit, MapPin, Trash2 } from 'lucide-react'
 import FormularioEdicao from "./FormularioEdicao";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function PainelEmpresa(){
 
@@ -58,11 +59,11 @@ export default function PainelEmpresa(){
             if(response.ok){
                 setMinhasVagas(estadoAtual => estadoAtual.filter(vaga => vaga.id !== id));
             }else{
-                alert("Falha ao excluir vaga no servidor. Você está autorizado?")
+                toast.error("Falha ao excluir vaga no servidor. Você está autorizado?")
             }
         }catch(error){
             console.error("Erro na req DELETE:", error)
-            alert("Erro de conexão com o servidor")
+            toast.error("Erro de conexão com o servidor")
         }
     }
 

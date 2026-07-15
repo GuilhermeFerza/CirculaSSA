@@ -1,6 +1,5 @@
-import { AlertTriangle, TextCursor } from "lucide-react"
 import React, { useState } from "react"
-
+import toast from "react-hot-toast"
 
 
 interface LoginProps{
@@ -43,12 +42,12 @@ export default function Login({setAbaAtiva}: LoginProps){
                 }
                 setAbaAtiva('mapa')
             }else{
-                alert("Falha ao criar usuario")
+                toast.error("Falha ao criar usuario")
             }
         
             }catch(error){
                 console.error("Erro na req:", error)
-                alert("Não foi possível conectar ao servidor.")
+                toast.error("Não foi possível conectar ao servidor.")
             }   
 
     }

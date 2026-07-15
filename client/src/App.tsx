@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { User } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 import MenuInferior from './components/MenuInferior';
@@ -12,6 +11,7 @@ import Perfil from './components/Perfil';
 import DetalhesVaga from './components/DetalhesVaga';
 import Register from './components/Register';
 import Login from './components/Login';
+import { Toaster } from 'react-hot-toast';
 
 export interface Vaga {
   id: number;
@@ -80,7 +80,7 @@ export default function App() {
   return (
       
     <>
-
+      <Toaster position="top-center" reverseOrder={false} />
       {abaAtiva === 'on-board' && (
         <Onboarding 
           setPerfilUsuario={setPerfilUsuario}

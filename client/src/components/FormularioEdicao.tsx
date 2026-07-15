@@ -1,7 +1,7 @@
 import { LogIn, MapPin, Save, X } from 'lucide-react'
 import { Vaga } from '../App';
 import { useState } from 'react';
-
+import toast from 'react-hot-toast';
 
 interface FormularioEdicaoProps{
     vagaParaEditar: Vaga;
@@ -34,12 +34,12 @@ export default function FormularioEdicao({ vagaParaEditar, fecharEdicao, atualiz
                 },
                 (erro) => {
                     console.error("Erro no GPS:", erro);
-                    alert("Acesso negado à localização.")
+                    toast.error("Acesso negado à localização.")
                     setBuscandoGps(false)
                 }
             );
         }else{
-            alert("Navegador incompatível com GPS.");
+            toast.error("Navegador incompatível com GPS.");
             setBuscandoGps(false)
         }
     };
@@ -75,11 +75,11 @@ export default function FormularioEdicao({ vagaParaEditar, fecharEdicao, atualiz
                 atualizarLista(dadosVaga)
                 fecharEdicao();
             }else{
-                alert("Falha na atualização do servidor.")
+                toast.error("Falha na atualização do servidor.")
             }
         }catch(error){
             console.error("Erro na req PUT:", error);
-            alert("Falha de conexão com o servidor.");
+            toast.error("Falha de conexão com o servidor.");
         }
     };
 

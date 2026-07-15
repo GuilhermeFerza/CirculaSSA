@@ -1,6 +1,6 @@
 import {} from 'lucide-react'
 import { Vaga } from '../App'
-
+import toast from 'react-hot-toast';
 
 interface DetalhesVagaProps{
     setVagaSelecionada : (vaga: Vaga | null) => void;
@@ -11,7 +11,7 @@ const favoritarVaga = async (id: number) => {
     const token = localStorage.getItem('token');
 
     if(!token){
-      alert('Você precisa estar logado para salvar vagas!');
+      toast.error('Você precisa estar logado para salvar vagas!');
       return;
     }
 
@@ -26,15 +26,15 @@ const favoritarVaga = async (id: number) => {
       });
 
       if(response.status === 201){
-        alert("Vaga salva com sucesso!")
+        toast.success("Vaga salva com sucesso!")
       }else if(response.status === 409){
-        alert("Você já salvou está vaga antes!");
+        toast.error("Você já salvou está vaga antes!");
       }else{
-        alert('Erro ao salvar a vaga.');
+        toast.error('Erro ao salvar a vaga.');
       }
     }catch(error){
       console.error("Erro ao favoritar:", error);
-      alert('Falha de conexão com o servidor');
+      toast.error('Falha de conexão com o servidor');
     }
 
   }
