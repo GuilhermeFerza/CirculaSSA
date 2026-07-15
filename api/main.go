@@ -35,6 +35,7 @@ type User struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 	Name     string `json:"name" binding:"required"`
+	Type     string `json:"type" binding:"required"`
 }
 
 type CredenciasLogin struct {
@@ -185,12 +186,13 @@ func main() {
 
 			var idBanco int
 			var senhaBanco string
+			var tipoBanco string
 
 			sqlStatement := `
-				SELECT id, password FROM users WHERE email = $1
+				SELECT id, password, type FROM users WHERE email = $1
 			`
 
-			err := db.QueryRow(sqlStatement, credenciais.Email).Scan(&idBanco, &senhaBanco)
+			err := db.QueryRow(sqlStatement, credenciais.Email).Scan(&idBanco, &senhaBanco, &tipoBanco)
 
 			if err != nil {
 				if err == sql.ErrNoRows {
@@ -224,7 +226,7 @@ func main() {
 				return
 			}
 
-			c.JSON(http.StatusOK, gin.H{"token": tokenString})
+			c.JSON(http.StatusOK, gin.H{"token": tokenString, "type": tipoBanco})
 
 		})
 
@@ -279,13 +281,13 @@ func main() {
 			}
 
 			sqlStatement := `
-				INSERT INTO users (email, password, name)
-				VALUES ($1, $2, $3)
+				INSERT INTO users (email, password, name, type)
+				VALUES ($1, $2, $3, $4)
 				RETURNING id
 			`
 
 			err = db.QueryRow(sqlStatement,
-				novoUser.Email, hashedPassword, novoUser.Name,
+				novoUser.Email, hashedPassword, novoUser.Name, novoUser.Type,
 			).Scan(&novoUser.ID)
 
 			if err != nil {

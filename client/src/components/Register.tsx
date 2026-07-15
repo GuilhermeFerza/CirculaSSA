@@ -12,39 +12,42 @@ export default function Login({setAbaAtiva}: LoginProps){
     const [email, setEmail]=useState('');
     const [password, setPassword]=useState('');
     const [checkPass, setCheckPass] = useState('');
+    const [type, setType] = useState("candidato");
 
     const [aviso, setAviso] = useState('aviso')
 
     const handleSubmit = async (e: React.FormEvent)=>{
         e.preventDefault()
+    
+        const tipo =  localStorage.getItem('perfilUsuario') || '';
+        setType(tipo)
+
+        if (password !== checkPass){
+            setAviso("aviso ativo");
+            return;
+        }
+
         const dadosUser = {
             name,
             email,
-            password
+            password,
+            type: tipo,
         }
         
             try{
-            const response = await fetch("http://localhost:8080/api/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(dadosUser),
-            });
-            if(response.ok){
-                const data = await response.json();
-                localStorage.setItem('token', data.token);
-                const perfilEscolhido = localStorage.getItem('perfilUsuario')
-                if(perfilEscolhido === 'empresa'){
-                    setAbaAtiva('painel-empresa');
-                } else{
-                    setAbaAtiva('mapa')
+                const response = await fetch("http://localhost:8080/api/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(dadosUser),
+                });
+                if(response.ok){
+                    toast.success("Conta criada com sucesso!");
+                    setAbaAtiva('login');
+                }else{
+                    toast.error("Falha ao criar usuário");
                 }
-                setAbaAtiva('mapa')
-            }else{
-                toast.error("Falha ao criar usuario")
-            }
-        
             }catch(error){
                 console.error("Erro na req:", error)
                 toast.error("Não foi possível conectar ao servidor.")
@@ -79,7 +82,7 @@ export default function Login({setAbaAtiva}: LoginProps){
 
 
                     <button type="submit" className="btn-submit">
-                        Entrar
+                        Registrar
                     </button>
                 </form>
                 

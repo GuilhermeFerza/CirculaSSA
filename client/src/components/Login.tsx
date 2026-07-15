@@ -10,16 +10,19 @@ export default function Login({setAbaAtiva, setPerfilUsuario}:LoginProps){
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [aviso, setAviso] = useState("aviso")
+    const [aviso, setAviso] = useState("aviso");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) =>{
         e.preventDefault();
+
         const dadosUser = {
             email,
             password,
+    
         }
         
-
+        setIsSubmitting(true);
         try{
             const response = await fetch("http://localhost:8080/api/login", {
                 method: 'POST',
@@ -31,7 +34,9 @@ export default function Login({setAbaAtiva, setPerfilUsuario}:LoginProps){
             
             if(response.ok){
                 const data = await response.json();
+                console.log("AQUI!!!!",data)
                 localStorage.setItem('token', data.token);
+                localStorage.setItem('perfilUsuario', data.type)
                 const perfilEscolhido = localStorage.getItem('perfilUsuario');
                 if(perfilEscolhido === 'empresa'){
                     setAbaAtiva('painel-empresa');
@@ -45,6 +50,7 @@ export default function Login({setAbaAtiva, setPerfilUsuario}:LoginProps){
             console.error("Erro na req:", error)
             toast.error("Não foi possível conectar ao servidor.")
         }
+        setIsSubmitting(false);
     }
 
     return(
@@ -66,7 +72,7 @@ export default function Login({setAbaAtiva, setPerfilUsuario}:LoginProps){
                     </div>
 
                     <button type="submit" className="btn-submit">
-                        Entrar
+                        {isSubmitting ? "Enviando..." : "Entrar"}
                     </button>
                 </form>
                 
