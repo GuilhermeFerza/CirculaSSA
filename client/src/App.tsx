@@ -22,6 +22,7 @@ export interface Vaga {
   bairro: string;
   latitude: number;
   longitude: number;
+  link_contato: string;
 }
 
 export default function App() {

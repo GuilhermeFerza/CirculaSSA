@@ -17,14 +17,15 @@ import (
 )
 
 type Vaga struct {
-	ID        int     `json:"id"`
-	Titulo    string  `json:"titulo"`
-	Descricao string  `json:"descricao"`
-	Empresa   string  `json:"empresa"`
-	Tipo      string  `json:"tipo"`
-	Bairro    string  `json:"bairro"`
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
+	ID          int     `json:"id"`
+	Titulo      string  `json:"titulo"`
+	Descricao   string  `json:"descricao"`
+	Empresa     string  `json:"empresa"`
+	Tipo        string  `json:"tipo"`
+	Bairro      string  `json:"bairro"`
+	Latitude    float64 `json:"latitude"`
+	Longitude   float64 `json:"longitude"`
+	LinkContato string  `json:"link_contato"`
 }
 
 type User struct {
@@ -140,7 +141,7 @@ func main() {
 				rows, err = db.Query(query, lon, lat, raio)
 
 			} else {
-				rows, err = db.Query("SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude FROM vagas")
+				rows, err = db.Query("SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato FROM vagas")
 			}
 
 			if err != nil {
@@ -152,7 +153,7 @@ func main() {
 			var vagas []Vaga
 			for rows.Next() {
 				var v Vaga
-				if err := rows.Scan(&v.ID, &v.Titulo, &v.Descricao, &v.Empresa, &v.Tipo, &v.Bairro, &v.Latitude, &v.Longitude); err == nil {
+				if err := rows.Scan(&v.ID, &v.Titulo, &v.Descricao, &v.Empresa, &v.Tipo, &v.Bairro, &v.Latitude, &v.Longitude, &v.LinkContato); err == nil {
 					vagas = append(vagas, v)
 				}
 			}
@@ -306,14 +307,14 @@ func main() {
 			}
 
 			sqlStatement := `
-				INSERT INTO vagas (titulo, descricao, empresa, tipo, bairro, latitude, longitude, geom, user_id)
-				VALUES ($1, $2, $3, $4, $5, $6, $7, ST_SetSRID(ST_MakePoint($7, $6), 4326), (SELECT id FROM users WHERE email = $8))
+				INSERT INTO vagas (titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato, geom, user_id)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, ST_SetSRID(ST_MakePoint($7, $6), 4326), (SELECT id FROM users WHERE email = $9))
 				RETURNING id
 			`
 
 			err := db.QueryRow(sqlStatement,
 				novaVaga.Titulo, novaVaga.Descricao, novaVaga.Empresa,
-				novaVaga.Tipo, novaVaga.Bairro, novaVaga.Latitude, novaVaga.Longitude, emailToken,
+				novaVaga.Tipo, novaVaga.Bairro, novaVaga.Latitude, novaVaga.Longitude, novaVaga.LinkContato, emailToken,
 			).Scan(&novaVaga.ID)
 
 			if err != nil {
@@ -327,7 +328,7 @@ func main() {
 			emailToken, _ := c.Get("userEmail")
 
 			query := `
-				SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude
+				SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato
 				FROM vagas
 				WHERE user_id = (SELECT id FROM users WHERE email = $1)
 			`
@@ -341,7 +342,7 @@ func main() {
 			var minhasVagas []Vaga
 			for rows.Next() {
 				var v Vaga
-				if err := rows.Scan(&v.ID, &v.Titulo, &v.Descricao, &v.Empresa, &v.Tipo, &v.Bairro, &v.Latitude, &v.Longitude); err == nil {
+				if err := rows.Scan(&v.ID, &v.Titulo, &v.Descricao, &v.Empresa, &v.Tipo, &v.Bairro, &v.Latitude, &v.Longitude, &v.LinkContato); err == nil {
 					minhasVagas = append(minhasVagas, v)
 				}
 			}
@@ -374,8 +375,8 @@ func main() {
 
 			sqlStatement := `
 				UPDATE vagas
-				SET titulo = $1, descricao =$2, empresa = $3, tipo = $4, bairro = $5, latitude = $6, longitude = $7, geom = ST_SetSRID(ST_MakePoint($7, $6), 4326)
-				WHERE id = $8 AND user_id = (SELECT id FROM users WHERE email = $9)
+				SET titulo = $1, descricao =$2, empresa = $3, tipo = $4, bairro = $5, latitude = $6, longitude = $7, link_contato = $8, geom = ST_SetSRID(ST_MakePoint($7, $6), 4326)
+				WHERE id = $9 AND user_id = (SELECT id FROM users WHERE email = $10)
 
 			`
 			res, err := db.Exec(sqlStatement,
@@ -386,6 +387,7 @@ func main() {
 				vagaAtualizada.Bairro,
 				vagaAtualizada.Latitude,
 				vagaAtualizada.Longitude,
+				vagaAtualizada.LinkContato,
 				id,
 				emailToken,
 			)
@@ -467,7 +469,7 @@ func main() {
 			emailToken, _ := c.Get("userEmail")
 
 			query := `
-				SELECT v.id, v.titulo, v.descricao, v.empresa, v.tipo, v.bairro, v.latitude, v.longitude
+				SELECT v.id, v.titulo, v.descricao, v.empresa, v.tipo, v.bairro, v.latitude, v.longitude, v.link_contato
 				FROM vagas v
 				INNER JOIN vagas_salvas vs ON v.id = vs.vaga_id
 				INNER JOIN users u ON u.id = vs.user_id
@@ -483,7 +485,7 @@ func main() {
 			var vagasSalvas []Vaga
 			for rows.Next() {
 				var v Vaga
-				if err := rows.Scan(&v.ID, &v.Titulo, &v.Descricao, &v.Empresa, &v.Tipo, &v.Bairro, &v.Latitude, &v.Longitude); err == nil {
+				if err := rows.Scan(&v.ID, &v.Titulo, &v.Descricao, &v.Empresa, &v.Tipo, &v.Bairro, &v.Latitude, &v.Longitude, &v.LinkContato); err == nil {
 					vagasSalvas = append(vagasSalvas, v)
 				}
 			}

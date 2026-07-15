@@ -16,6 +16,7 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
     const [descricao, setDescricao] = useState('');
     const [tipo, setTipo] = useState('CLT');
     const [bairro, setBairro] = useState('');
+    const [linkContato, setLinkContato] = useState('');
 
     const[localizacao, setLocalizacao] = useState<{lat: number, lon: number} | null>(null)
     const [buscandoGps, setBuscandoGps] = useState(false);
@@ -61,7 +62,8 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
             tipo,
             bairro,
             latitude: localizacao.lat,
-            longitude: localizacao.lon
+            longitude: localizacao.lon,
+            link_contato: linkContato
         };
 
         console.log("Vaga pronta para ir no backend:", dadosVagas)
@@ -144,6 +146,18 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
                         )}
                     </button>
                 </div>
+
+                <div className="grupo-input">
+                    <label>Link ou E-mail para Contato</label>
+                    <input 
+                        type="text" 
+                        placeholder="ex: https://gupy.io/... ou rh@suaempresa.com" 
+                        value={linkContato} 
+                        onChange={(e) => setLinkContato(e.target.value)} 
+                        required 
+                    />
+                </div>
+
                     <button type='submit' className='btn-submit'>
                         <Send size={20} /> Anunciar Vaga
                     </button>

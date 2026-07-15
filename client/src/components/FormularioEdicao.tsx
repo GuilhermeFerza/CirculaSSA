@@ -15,6 +15,7 @@ export default function FormularioEdicao({ vagaParaEditar, fecharEdicao, atualiz
     const [descricao, setDescricao] = useState(vagaParaEditar.descricao);
     const [tipo, setTipo] = useState(vagaParaEditar.tipo);
     const [bairro, setBairro] = useState(vagaParaEditar.bairro);
+    const [linkContato, setLinkContato] = useState('');
     const [localizacao, setLocalizacao] = useState({lat: vagaParaEditar.latitude, lon: vagaParaEditar.longitude});
     const [buscandoGps, setBuscandoGps] =useState(false);
 
@@ -54,7 +55,8 @@ export default function FormularioEdicao({ vagaParaEditar, fecharEdicao, atualiz
             tipo,
             bairro,
             latitude: localizacao.lat,
-            longitude: localizacao.lon
+            longitude: localizacao.lon,
+            link_contato: linkContato
         };
 
         const token = localStorage.getItem('token')
@@ -117,6 +119,16 @@ export default function FormularioEdicao({ vagaParaEditar, fecharEdicao, atualiz
                         <button type="button" className="btn-gps sucesso" onClick={capturarLocalizacao}>
                             {buscandoGps ? "Atualizando..." : <><MapPin size={20} /> Atualizar Coordenadas</>}
                         </button>
+                    </div>
+                    <div className="grupo-input">
+                        <label>Link ou E-mail para Contato</label>
+                        <input 
+                            type="text" 
+                            placeholder="ex: https://gupy.io/... ou rh@suaempresa.com" 
+                            value={linkContato} 
+                            onChange={(e) => setLinkContato(e.target.value)} 
+                            required 
+                        />
                     </div>
                     <button type="submit" className="btn-submit">
                         <Save size={20} /> Salvar Alterações
