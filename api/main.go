@@ -352,6 +352,9 @@ func main() {
 		})
 
 		rotasProtegidas.PUT("/:id", func(c *gin.Context) {
+
+			emailToken, _ := c.Get("userEmail")
+
 			idStr := c.Param("id")
 			id, err := strconv.Atoi(idStr)
 			if err != nil {
@@ -372,7 +375,7 @@ func main() {
 			sqlStatement := `
 				UPDATE vagas
 				SET titulo = $1, descricao =$2, empresa = $3, tipo = $4, bairro = $5, latitude = $6, longitude = $7, geom = ST_SetSRID(ST_MakePoint($7, $6), 4326)
-				WHERE id = $8
+				WHERE id = $8 AND user_id = (SELECT id FROM users WHERE email = $9)
 
 			`
 			res, err := db.Exec(sqlStatement,
@@ -384,6 +387,7 @@ func main() {
 				vagaAtualizada.Latitude,
 				vagaAtualizada.Longitude,
 				id,
+				emailToken,
 			)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Vaga nao encontrada"})
@@ -400,14 +404,20 @@ func main() {
 
 		})
 		rotasProtegidas.DELETE("/:id", func(c *gin.Context) {
+
+			emailToken, _ := c.Get("userEmail")
+
 			idStr := c.Param("id")
 			id, err := strconv.Atoi(idStr)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"erro": "ID invalido"})
 				return
 			}
-			sqlStatement := `DELETE FROM vagas WHERE id = $1`
-			res, err := db.Exec(sqlStatement, id)
+			sqlStatement := `
+				DELETE FROM vagas 
+				WHERE id = $1 AND user_id = (SELECT id FROM users WHERE email = $2)
+			`
+			res, err := db.Exec(sqlStatement, id, emailToken)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao excluir vaga do banco de dados"})
 				return
