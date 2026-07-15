@@ -71,7 +71,7 @@ export default function Login({setAbaAtiva, setPerfilUsuario}:LoginProps){
                 </form>
                 
                 <div className="links-adicionais">
-                <p className={aviso}>senhas não coincidem</p>
+                <p className={aviso}>senhas ou email incorretos</p>
                 <a href="#">Esqueci minha senha</a>
                 <a style={{cursor: 'pointer'}} onClick={(e)=>{e.preventDefault(); setAbaAtiva('register')}}>Criar uma nova conta</a>
                 </div>

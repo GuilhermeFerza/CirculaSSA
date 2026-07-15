@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	_ "github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Vaga struct {
@@ -43,6 +44,16 @@ var jwtKey = []byte("CirculaSSA821")
 type Claims struct {
 	Email string `json:"email"`
 	jwt.RegisteredClaims
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
 
 func AuthMiddleware() gin.HandlerFunc {
@@ -180,7 +191,7 @@ func main() {
 				return
 			}
 
-			if credenciais.Password != senhaBanco {
+			if !CheckPasswordHash(credenciais.Password, senhaBanco) {
 				c.JSON(http.StatusUnauthorized, gin.H{"erro": "Email ou senha incorretos"})
 				return
 			}
@@ -247,20 +258,28 @@ func main() {
 				return
 			}
 
+			hashedPassword, err := HashPassword(novoUser.Password)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao processar a senha"})
+				return
+			}
+
 			sqlStatement := `
 				INSERT INTO users (email, password, name)
 				VALUES ($1, $2, $3)
 				RETURNING id
 			`
 
-			err := db.QueryRow(sqlStatement,
-				novoUser.Email, novoUser.Password, novoUser.Name,
+			err = db.QueryRow(sqlStatement,
+				novoUser.Email, hashedPassword, novoUser.Name,
 			).Scan(&novoUser.ID)
 
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao salvar no banco", "detalhes": err.Error()})
 				return
 			}
+
+			novoUser.Password = ""
 			c.JSON(http.StatusOK, novoUser)
 		})
 
@@ -270,6 +289,8 @@ func main() {
 	rotasProtegidas.Use(AuthMiddleware())
 	{
 		rotasProtegidas.POST("", func(c *gin.Context) {
+			emailToken, _ := c.Get("userEmail")
+
 			var novaVaga Vaga
 
 			if err := c.ShouldBindJSON(&novaVaga); err != nil {
@@ -285,14 +306,14 @@ func main() {
 			}
 
 			sqlStatement := `
-				INSERT INTO vagas (titulo, descricao, empresa, tipo, bairro, latitude, longitude, geom)
-				VALUES ($1, $2, $3, $4, $5, $6, $7, ST_SetSRID(ST_MakePoint($7, $6), 4326))
+				INSERT INTO vagas (titulo, descricao, empresa, tipo, bairro, latitude, longitude, geom, user_id)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, ST_SetSRID(ST_MakePoint($7, $6), 4326), (SELECT id FROM users WHERE email = $8))
 				RETURNING id
 			`
 
 			err := db.QueryRow(sqlStatement,
 				novaVaga.Titulo, novaVaga.Descricao, novaVaga.Empresa,
-				novaVaga.Tipo, novaVaga.Bairro, novaVaga.Latitude, novaVaga.Longitude,
+				novaVaga.Tipo, novaVaga.Bairro, novaVaga.Latitude, novaVaga.Longitude, emailToken,
 			).Scan(&novaVaga.ID)
 
 			if err != nil {
@@ -302,6 +323,34 @@ func main() {
 
 			c.JSON(http.StatusCreated, novaVaga)
 		})
+		rotasProtegidas.GET("/minhas", func(c *gin.Context) {
+			emailToken, _ := c.Get("userEmail")
+
+			query := `
+				SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude
+				FROM vagas
+				WHERE user_id = (SELECT id FROM users WHERE email = $1)
+			`
+			rows, err := db.Query(query, emailToken)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao buscar suas vagas"})
+				return
+			}
+			defer rows.Close()
+
+			var minhasVagas []Vaga
+			for rows.Next() {
+				var v Vaga
+				if err := rows.Scan(&v.ID, &v.Titulo, &v.Descricao, &v.Empresa, &v.Tipo, &v.Bairro, &v.Latitude, &v.Longitude); err == nil {
+					minhasVagas = append(minhasVagas, v)
+				}
+			}
+			if minhasVagas == nil {
+				minhasVagas = []Vaga{}
+			}
+			c.JSON(http.StatusOK, minhasVagas)
+		})
+
 		rotasProtegidas.PUT("/:id", func(c *gin.Context) {
 			idStr := c.Param("id")
 			id, err := strconv.Atoi(idStr)

@@ -35,7 +35,12 @@ export default function Login({setAbaAtiva}: LoginProps){
             if(response.ok){
                 const data = await response.json();
                 localStorage.setItem('token', data.token);
-                localStorage.setItem('perfilUsuario', 'empresa');
+                const perfilEscolhido = localStorage.getItem('perfilUsuario')
+                if(perfilEscolhido === 'empresa'){
+                    setAbaAtiva('painel-empresa');
+                } else{
+                    setAbaAtiva('mapa')
+                }
                 setAbaAtiva('mapa')
             }else{
                 alert("Falha ao criar usuario")

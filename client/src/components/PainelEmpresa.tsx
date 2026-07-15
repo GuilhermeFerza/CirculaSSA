@@ -8,16 +8,37 @@ export default function PainelEmpresa(){
     const [vagaEmEdicao, setVagaEmEdicao]=useState<Vaga | null>(null)
     const [minhasVagas, setMinhasVagas]=useState<Vaga[]>([])
 
-    useEffect(()=>{
-        fetch("http://localhost:8080/api/vaga")
-            .then(res => res.json())
-            .then(data =>{
-                if(Array.isArray(data)){
-                    setMinhasVagas(data)
+    const carregarDados = async ()=>{
+        const token = localStorage.getItem('token')
+
+        if(!token){
+            console.error("Nenhum token encontrado. User nao autenticado");
+            return;
+        }
+
+        try{
+            const response = await fetch('http://localhost:8080/api/vaga/minhas', {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 }
-            })
-            .catch(err => console.error("Erro na req integral de vagas:", err));
-    }, []);  
+            });
+            if(response.ok){
+                const dadosVagas = await response.json();
+                console.log("Dados recebidos do servidor: ", dadosVagas)
+                setMinhasVagas(dadosVagas);
+            }else{
+                console.error("Erro na auth ou rota nao encontrada. Status: ", response.status)
+            }
+        }catch(error){
+            console.error("Falha na comunicacao com a API: ", error)
+        }
+    };
+
+    useEffect(()=>{
+        carregarDados();
+    },[])
 
 
 
