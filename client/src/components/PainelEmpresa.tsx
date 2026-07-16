@@ -19,7 +19,8 @@ export default function PainelEmpresa(){
         }
 
         try{
-            const response = await fetchAuth('http://localhost:8080/api/vaga/minhas', {
+            const API_URL = import.meta.env.VITE_API_URL;
+            const response = await fetchAuth(`${API_URL}/api/vaga/minhas`, {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",
@@ -51,7 +52,8 @@ export default function PainelEmpresa(){
         const token = localStorage.getItem('token')
 
         try{
-            const response = await fetchAuth(`http://localhost:8080/api/vaga/${id}`,{
+            const API_URL = import.meta.env.VITE_API_URL;
+            const response = await fetchAuth(`${API_URL}/api/vaga/${id}`,{
                 method: 'DELETE',
                 headers: {
                     "Authorization": `Bearer ${token}`

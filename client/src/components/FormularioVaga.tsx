@@ -76,7 +76,8 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
         setIsSubmitting(true);
 
         try{
-            const response = await fetchAuth("http://localhost:8080/api/vaga", {
+            const API_URL = import.meta.env.VITE_API_URL;
+            const response = await fetchAuth(`${API_URL}/api/vaga`, {
                 method: "POST",
                 headers: {
                     "Content-Type":  "application/json",

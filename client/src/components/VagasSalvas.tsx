@@ -12,7 +12,8 @@ export default function VagasSalvas(){
         if(!token) return;
     
         try{
-            const response = await fetchAuth('http://localhost:8080/api/salvas',{
+            const API_URL = import.meta.env.VITE_API_URL;
+            const response = await fetchAuth(`${API_URL}/api/salvas`,{
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -35,7 +36,8 @@ export default function VagasSalvas(){
     const removerVaga = async (id: number) =>{
         const token = localStorage.getItem('token');
         try{
-            const response = await fetch(`http://localhost:8080/api/salvas/${id}`, {
+            const API_URL = import.meta.env.VITE_API_URL;
+            const response = await fetchAuth(`${API_URL}/api/salvas/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`

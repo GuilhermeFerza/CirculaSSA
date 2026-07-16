@@ -17,7 +17,8 @@ const favoritarVaga = async (id: number) => {
     }
 
     try{
-      const response = await fetchAuth('http://localhost:8080/api/salvas', {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetchAuth(`${API_URL}/api/salvas`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

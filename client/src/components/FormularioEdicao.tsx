@@ -63,7 +63,8 @@ export default function FormularioEdicao({ vagaParaEditar, fecharEdicao, atualiz
         const token = localStorage.getItem('token')
 
         try{
-            const response = await fetchAuth(`http://localhost:8080/api/vaga/${vagaParaEditar.id}`, {
+            const API_URL = import.meta.env.VITE_API_URL;
+            const response = await fetchAuth(`${API_URL}/api/vaga/${vagaParaEditar.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

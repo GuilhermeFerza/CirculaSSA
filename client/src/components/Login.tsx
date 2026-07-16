@@ -24,7 +24,8 @@ export default function Login({setAbaAtiva, setPerfilUsuario}:LoginProps){
         
         setIsSubmitting(true);
         try{
-            const response = await fetch("http://localhost:8080/api/login", {
+            const API_URL = import.meta.env.VITE_API_URL;
+            const response = await fetch(`${API_URL}/api/login`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",

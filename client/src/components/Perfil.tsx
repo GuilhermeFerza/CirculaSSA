@@ -27,7 +27,8 @@ export default function Perfil({perfilUsuario, setPerfilUsuario, setAbaAtiva}: P
       return;
     }
     try{
-      const response = await fetchAuth("http://localhost:8080/api/login", {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetchAuth(`${API_URL}/api/login`, {
         method: 'GET',
         headers: {
           "Content-Type": "application/json",
