@@ -67,7 +67,7 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
             const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`)
             const data = await response.json();
 
-            if(data && data.lenght > 0){
+            if(data && data.length > 0){
                 setLocalizacao({
                     lat: parseFloat(data[0].lat),
                     lon: parseFloat(data[0].lon)
