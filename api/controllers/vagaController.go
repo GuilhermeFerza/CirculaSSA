@@ -38,11 +38,13 @@ func (vc *VagaController) GetVagas(c *gin.Context) {
 							geom::geography,
 							ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
 							$3
-						)`
+						)
+						LIMIT 150	
+						`
 		rows, err = vc.DB.Query(query, lon, lat, raio)
 
 	} else {
-		rows, err = vc.DB.Query("SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato FROM vagas")
+		rows, err = vc.DB.Query("SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato FROM vagas LIMIT 150")
 	}
 
 	if err != nil {
