@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { CheckCircle, MapPin, Send } from 'lucide-react'
 import { Vaga } from '../App';
 import toast from 'react-hot-toast';
@@ -52,6 +52,36 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
             setBuscandoGps(false)
         }
     };
+
+    const buscarCoordenadasPorEndereco = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if(!enderecoBusca){
+            toast.error("Digite um endereço para buscar.")
+            return;
+        }
+
+        setBuscandoEndereco(true);
+        try{
+            const query = encodeURIComponent(`${enderecoBusca}, Salvador, Bahia, Brasil`);
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`)
+            const data = await response.json();
+
+            if(data && data.lenght > 0){
+                setLocalizacao({
+                    lat: parseFloat(data[0].lat),
+                    lon: parseFloat(data[0].lon)
+                });
+                toast.success("Localização encontrada com sucesso no mapa!");
+            }else{
+                toast.error("Endereço não encontrado. Tente colocar a rua e o bairro.")
+            }
+        }catch(error){
+            console.error("Erro na busca de endereço:", error);
+            toast.error("Falha ao buscar o endereço.");
+        }
+        setBuscandoEndereco(false);
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -141,7 +171,27 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
 
                 <div className='cartao-gps'>
                     <h3>Localização no Mapa</h3>
-                    <p>Precisamos da localização exata para exibir o pino no mapa da cidade.</p>
+                    <p>Digite o endereço ou local de trabalho para marcarmos no mapa.</p>
+                    
+                    <div style={{ display: 'flex', gap: '10px', width: '100%', marginBottom: '12px' }}>
+                        <input 
+                            type="text" 
+                            placeholder="Ex: Shopping da Bahia..." 
+                            value={enderecoBusca}
+                            onChange={(e) => setEnderecoBusca(e.target.value)}
+                            style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid #bae6fd' }}
+                        />
+                        <button 
+                            onClick={buscarCoordenadasPorEndereco}
+                            style={{ padding: '12px 20px', borderRadius: '10px', backgroundColor: '#0ea5e9', color: 'white', border: 'none', cursor: 'pointer' }}
+                            disabled={buscandoEndereco}
+                        >
+                            {buscandoEndereco ? "Buscando..." : "Buscar"}
+                        </button>
+                    </div>
+
+                    <p style={{ textAlign: 'center', margin: '5px 0', fontSize: '0.8rem', color: '#0369a1' }}>OU</p>
+
                     <button 
                         className={`btn-gps ${localizacao ? 'sucesso' : ''}`}
                         onClick={capturarLocalizacao}
@@ -149,9 +199,9 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
                         {buscandoGps ? (
                             "Buscando satélites..."
                         ) : localizacao ? (
-                            <><CheckCircle size={20}/>Localização Salva</>
+                            <><CheckCircle size={20}/>Localização Salva!</>
                         ) : (
-                            <><MapPin size={20}/> Capturar Posição Atual</>
+                            <><MapPin size={20}/> Usar meu GPS atual</>
                         )}
                     </button>
                 </div>
