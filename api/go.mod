@@ -1,4 +1,4 @@
-module CirculaSSA/api
+module github.com/GuilhermeFerza/CirculaSSA
 
 go 1.25.2
 
