@@ -1,6 +1,8 @@
 package models
 
-import "github.com/golang-jwt/jwt/v5"
+import (
+	"github.com/golang-jwt/jwt/v5"
+)
 
 type Vaga struct {
 	ID          int     `json:"id"`
