@@ -9,9 +9,11 @@ interface FiltrosProps{
     mostrarBairro: string
     setMostrarBairro: (smb: string) => void
     setMostrarFiltros: (smf: boolean) => void
+    termoBusca: string
+    setTermoBusca: (stb: string) => void
 }
 
-export default function Filtros({mostrarFiltros, filtrosAtivos, alternarFiltro, bairrosDisponiveis, mostrarBairro, setMostrarBairro, setMostrarFiltros}:FiltrosProps){
+export default function Filtros({mostrarFiltros, filtrosAtivos, alternarFiltro, bairrosDisponiveis, mostrarBairro, setMostrarBairro, setMostrarFiltros, termoBusca, setTermoBusca}:FiltrosProps){
     return(
         <>
 
@@ -24,6 +26,16 @@ export default function Filtros({mostrarFiltros, filtrosAtivos, alternarFiltro, 
             
             {mostrarFiltros &&(
                 <div className="painel-filtros">
+                    <div style={{ marginBottom: '20px' }}>
+                        <input 
+                            type="text" 
+                            placeholder="Buscar vaga por título..." 
+                            value={termoBusca}
+                            onChange={(e) => setTermoBusca(e.target.value)}
+                            className="select-bairro" // Reaproveitando a classe para manter o estilo visual
+                            style={{ backgroundImage: 'none', paddingRight: '16px' }} // Removendo a setinha do select
+                        />
+                    </div>
                     <h3>Mostrar oportunidades do tipo</h3>
                     <div className="chips-container">
                         {['Estágio', 'CLT', 'Jovem Aprendiz', 'Mutirão'].map(tipo => (

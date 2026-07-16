@@ -168,6 +168,22 @@ func (vc *VagaController) DeleteVagas(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"erro": "ID invalido"})
 		return
 	}
+
+	sqlDeleteSalvas := `
+		DELETE FROM vagas_salvas
+		WHERE vaga_id = $1
+		AND EXISTS(
+			SELECT 1 FROM vagas
+			WHERE id = $1 AND user_id = (SELECT id FROM users WHERE email = $2)
+		)
+	`
+	_, err = vc.DB.Exec(sqlDeleteSalvas, id, emailToken)
+	if err != nil {
+		log.Printf("[SECURITY/ERROR] Falha ao limpar vagas salvas: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"erro": "Erro interno ao processar exclusão"})
+		return
+	}
+
 	sqlStatement := `
 				DELETE FROM vagas 
 				WHERE id = $1 AND user_id = (SELECT id FROM users WHERE email = $2)

@@ -19,6 +19,8 @@ interface MapaPrincipalProps{
     mostrarBairro: string
     setMostrarBairro: (smb: string) => void
     setMostrarFiltros: (smf: boolean) => void
+    termoBusca: string
+    setTermoBusca: (stb: string) => void
 }
 
 
@@ -60,7 +62,7 @@ function BuscadorDinamico({buscarVagas, abaAtiva, salvadorCentro, vagasFiltradas
   }
 
 
-export default function MapaPrincipal({abaAtiva, salvadorCentro, buscarVagas, vagasFiltradas, setVagaSelecionada, mostrarFiltros, filtrosAtivos, alternarFiltro, bairrosDisponiveis, mostrarBairro, setMostrarBairro, setMostrarFiltros}:MapaPrincipalProps){
+export default function MapaPrincipal({abaAtiva, salvadorCentro, buscarVagas, vagasFiltradas, setVagaSelecionada, mostrarFiltros, filtrosAtivos, alternarFiltro, bairrosDisponiveis, mostrarBairro, setMostrarBairro, setMostrarFiltros, termoBusca, setTermoBusca}:MapaPrincipalProps){
     return(
         <>
             {abaAtiva === 'mapa' &&(
@@ -83,6 +85,8 @@ export default function MapaPrincipal({abaAtiva, salvadorCentro, buscarVagas, va
                             mostrarBairro = {mostrarBairro}
                             setMostrarBairro = {setMostrarBairro}
                             setMostrarFiltros = {setMostrarFiltros}
+                            termoBusca = {termoBusca}
+                            setTermoBusca = {setTermoBusca}
                         />
                         {vagasFiltradas.map((vaga)=>(
                             <Marker 
@@ -101,6 +105,8 @@ export default function MapaPrincipal({abaAtiva, salvadorCentro, buscarVagas, va
                         mostrarBairro = {mostrarBairro}
                         setMostrarBairro = {setMostrarBairro}
                         setMostrarFiltros = {setMostrarFiltros}
+                        termoBusca = {termoBusca}
+                        setTermoBusca = {setTermoBusca}
                     />
 
                 </>

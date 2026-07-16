@@ -37,9 +37,7 @@ export default function App() {
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [mostrarBairro, setMostrarBairro] = useState<string>('');
   const salvadorCentro: [number, number] = [-12.9714, -38.5014];
-
-
-  
+  const [termoBusca, setTermoBusca] = useState('');
 
   const alternarFiltro = (tipo: string) => {
     if (filtrosAtivos.includes(tipo)) {
@@ -54,7 +52,9 @@ export default function App() {
   const vagasFiltradas = vagas.filter(vaga => {
     const passaFiltroTipo = filtrosAtivos.includes(vaga.tipo);
     const passaFiltroBairro = mostrarBairro === '' || vaga.bairro === mostrarBairro;
-    return passaFiltroTipo && passaFiltroBairro;
+
+    const passaBusca = termoBusca === '' || vaga.titulo.toLowerCase().includes(termoBusca.toLowerCase());
+    return passaFiltroTipo && passaFiltroBairro && passaBusca;
   });
 
 
@@ -104,7 +104,8 @@ export default function App() {
             mostrarBairro = {mostrarBairro}
             setMostrarBairro = {setMostrarBairro}
             setMostrarFiltros = {setMostrarFiltros}
-          
+            termoBusca = {termoBusca}
+            setTermoBusca = {setTermoBusca}
           />
           <MenuInferior
             perfilUsuario={perfilUsuario}
