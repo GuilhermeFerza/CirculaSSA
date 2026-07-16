@@ -19,7 +19,8 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
     const [bairro, setBairro] = useState('');
     const [linkContato, setLinkContato] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [enderecoBusca, setEnderecoBusca] = useState('');
+    const [rua, setRua] = useState('');
+    const [numero, setNumero] = useState('');
     const [buscandoEndereco, setBuscandoEndereco]=useState(false);
 
 
@@ -56,14 +57,18 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
     const buscarCoordenadasPorEndereco = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        if(!enderecoBusca){
-            toast.error("Digite um endereço para buscar.")
+        if (!rua || !bairro){
+            toast.error("Preencha a Rua e o Bairro para buscar no mapa.");
             return;
         }
 
         setBuscandoEndereco(true);
         try{
-            const query = encodeURIComponent(`${enderecoBusca}, Salvador, Bahia, Brasil`);
+
+            const enderecoCompleto = `${rua}, ${bairro}, Salvador, Bahia, Brasil`;
+
+
+            const query = encodeURIComponent(enderecoCompleto);
             const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`)
             const data = await response.json();
 
@@ -171,30 +176,32 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
 
                 <div className='cartao-gps'>
                     <h3>Localização no Mapa</h3>
-                    <p>Digite o endereço ou local de trabalho para marcarmos no mapa.</p>
-                    
-                    <div style={{ display: 'flex', gap: '10px', width: '100%', marginBottom: '12px' }}>
-                        <input 
-                            type="text" 
-                            placeholder="Ex: Shopping da Bahia..." 
-                            value={enderecoBusca}
-                            onChange={(e) => setEnderecoBusca(e.target.value)}
-                            style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid #bae6fd' }}
-                        />
+                    <p>Informe o endereço exato para cravarmos o pino no mapa em uma localização geral.(otilizar o "Usar meu GPS Atual" é mais preciso. Lembre-se de digitar o bairro)</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', marginBottom: '12px' }}>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <input 
+                                type="text" 
+                                placeholder="Rua / Avenida (Ex: Av. Tancredo Neves)" 
+                                value={rua}
+                                onChange={(e) => setRua(e.target.value)}
+                                style={{ flex: 2, padding: '12px', borderRadius: '10px', border: '1px solid #bae6fd' }}
+                            />
+                        </div>
                         <button 
                             onClick={buscarCoordenadasPorEndereco}
-                            style={{ padding: '12px 20px', borderRadius: '10px', backgroundColor: '#0ea5e9', color: 'white', border: 'none', cursor: 'pointer' }}
+                            style={{ padding: '12px 20px', borderRadius: '10px', backgroundColor: '#0ea5e9', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
                             disabled={buscandoEndereco}
                         >
-                            {buscandoEndereco ? "Buscando..." : "Buscar"}
+                            {buscandoEndereco ? "Buscando..." : "Buscar Endereço no Mapa"}
                         </button>
                     </div>
 
-                    <p style={{ textAlign: 'center', margin: '5px 0', fontSize: '0.8rem', color: '#0369a1' }}>OU</p>
+                    <p style={{ textAlign: 'center', margin: '5px 0', fontSize: '0.8rem', color: '#0369a1', width: '100%' }}>OU</p>
 
                     <button 
                         className={`btn-gps ${localizacao ? 'sucesso' : ''}`}
                         onClick={capturarLocalizacao}
+                        style={{ width: '100%' }}
                     >
                         {buscandoGps ? (
                             "Buscando satélites..."
