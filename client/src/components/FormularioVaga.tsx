@@ -19,6 +19,10 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
     const [bairro, setBairro] = useState('');
     const [linkContato, setLinkContato] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [enderecoBusca, setEnderecoBusca] = useState('');
+    const [buscandoEndereco, setBuscandoEndereco]=useState(false);
+
+
 
     const[localizacao, setLocalizacao] = useState<{lat: number, lon: number} | null>(null)
     const [buscandoGps, setBuscandoGps] = useState(false);

@@ -57,9 +57,9 @@ export default function App() {
     return passaFiltroTipo && passaFiltroBairro && passaBusca;
   });
 
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const buscarVagas = useCallback((lat: number, lon: number, raio: number) => {
-    fetch(`http://localhost:8080/api/vaga?lat=${lat}&lon=${lon}&raio=${raio}`)
+    fetch(`${API_URL}/api/vaga?lat=${lat}&lon=${lon}&raio=${raio}`)
       .then((resposta) => resposta.json())
       .then((dados) => {
         if (dados.erro) {
