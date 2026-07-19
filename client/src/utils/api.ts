@@ -4,7 +4,7 @@ export const fetchAuth = async (url: string, options: RequestInit = {}) => {
     const token = localStorage.getItem('token');
 
     const headers = {
-        'Content-Type': 'application/type',
+        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
         ...options.headers
     };

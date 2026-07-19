@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import toast from "react-hot-toast"
+import { fetchAuth } from '../utils/api';
 
 interface LoginProps{
     setAbaAtiva: (saa: string) => void
@@ -25,7 +26,7 @@ export default function Login({setAbaAtiva, setPerfilUsuario}:LoginProps){
         setIsSubmitting(true);
         try{
             const API_URL = import.meta.env.VITE_API_URL;
-            const response = await fetch(`${API_URL}/api/login`, {
+            const response = await fetchAuth(`${API_URL}/api/login`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",

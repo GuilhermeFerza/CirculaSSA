@@ -446,6 +446,34 @@ button:focus {
   transition: all 0.2s ease;
 }
 
+.btn-salvar {
+  margin-top: 10px;
+  background-color: #f1fff7;
+  color: #1de137;
+  border: 1px solid #cdfef6;
+  padding: 16px 24px;
+  width: 100%;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-edit{
+  margin-top: 10px;
+  background-color: #f1f4ff;
+  color: #1d89e1;
+  border: 1px solid #cddafe;
+  padding: 16px 24px;
+  width: 100%;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
 .btn-sair:active {
   transform: scale(0.96);
   background-color: #ffe4e6;

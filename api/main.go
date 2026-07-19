@@ -79,7 +79,8 @@ func main() {
 		frontEndURL = "http://localhost:5173"
 	}
 
-	config.AllowOrigins = []string{frontEndURL}
+	config.AllowOrigins = []string{frontEndURL, "http://192.168.1.185:5173"}
+	config.AllowCredentials = true
 	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}
 	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
 
@@ -92,11 +93,10 @@ func main() {
 	api := r.Group("/api")
 	{
 		api.GET("/vaga", vagaCtrl.GetVagas)
-
 		api.POST("/login", userCtrl.PostUsers)
-
 		api.GET("/login", AuthMiddleware(), userCtrl.GetUsers)
 		api.POST("/register", userCtrl.GetNewUsers)
+		api.PUT("/users", AuthMiddleware(), userCtrl.PutUsers)
 
 	}
 
@@ -117,6 +117,6 @@ func main() {
 		rotasSalvas.DELETE("/:id", salvasCtrl.DeleteSalvas)
 	}
 
-	r.Run(":8080")
+	r.Run(":8081")
 
 }

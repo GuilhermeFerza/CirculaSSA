@@ -27,13 +27,14 @@ func (uc *UserController) GetUsers(c *gin.Context) {
 	var idBanco int
 	var nameBanco string
 	var emailBanco string
+	var typeBanco string
 
 	sqlStatement :=
 		`
-				SELECT id, name, email FROM users WHERE email = $1
+				SELECT id, name, email, type FROM users WHERE email = $1
 			`
 
-	err := uc.DB.QueryRow(sqlStatement, emailToken).Scan(&idBanco, &nameBanco, &emailBanco)
+	err := uc.DB.QueryRow(sqlStatement, emailToken).Scan(&idBanco, &nameBanco, &emailBanco, &typeBanco)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -49,6 +50,7 @@ func (uc *UserController) GetUsers(c *gin.Context) {
 		"id":    idBanco,
 		"name":  nameBanco,
 		"email": emailBanco,
+		"type":  typeBanco,
 	})
 }
 
@@ -103,6 +105,45 @@ func (uc *UserController) PostUsers(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"token": tokenString, "type": tipoBanco})
+
+}
+
+func (uc *UserController) PutUsers(c *gin.Context) {
+
+	emailToken, existe := c.Get("userEmail")
+	if !existe {
+		c.JSON(http.StatusUnauthorized, gin.H{"erro": "Usuario nao identificado"})
+		return
+	}
+
+	var perfilAtualizado struct {
+		Name string `json:"name" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&perfilAtualizado); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"erro": "Formato de JSON inválido", "detalhes": err.Error()})
+		return
+	}
+
+	sqlStatement := `
+		UPDATE users
+		SET name = $1
+		WHERE email = $2
+	`
+
+	res, err := uc.DB.Exec(sqlStatement, perfilAtualizado.Name, emailToken)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"erro": "Erro interno ao atualizar perfil"})
+		return
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil || count == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"erro": "Erro interno ao atualizar perfil"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"mensagem": "perfil atualizado com sucesso"})
 
 }
 
