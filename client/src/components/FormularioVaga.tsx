@@ -25,36 +25,7 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
     const [numero, setNumero] = useState('');
     const [buscandoEndereco, setBuscandoEndereco]=useState(false);
 
-
-
     const[localizacao, setLocalizacao] = useState<{lat: number, lon: number} | null>(null)
-    const [buscandoGps, setBuscandoGps] = useState(false);
-
-    const capturarLocalizacao = (e: React.MouseEvent) => {
-        e.preventDefault();
-        setBuscandoGps(true);
-
-
-        if("geolocation" in navigator){
-            navigator.geolocation.getCurrentPosition(
-                (posicao) => {
-                    setLocalizacao({
-                        lat: posicao.coords.latitude,
-                        lon: posicao.coords.longitude
-                    });
-                    setBuscandoGps(false)
-                },
-                (erro) => {
-                    console.error("Erro no GPS:", erro);
-                    toast.error("Não conseguimos acessar sua localização. Verifique as permissões do navegador.");
-                    setBuscandoGps(false);
-                }
-            );
-        }else{
-            toast.error("Seu navegador não suporta GPS.")
-            setBuscandoGps(false)
-        }
-    };
 
     const buscarCoordenadasPorEndereco = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -206,25 +177,9 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
                         </button>
                     </div>
 
-                    <p style={{ textAlign: 'center', margin: '5px 0', fontSize: '0.8rem', color: '#0369a1', width: '100%' }}>OU</p>
-
-                    <button 
-                        className={`btn-gps ${localizacao ? 'sucesso' : ''}`}
-                        onClick={capturarLocalizacao}
-                        style={{ width: '100%' }}
-                    >
-                        {buscandoGps ? (
-                            "Buscando satélites..."
-                        ) : localizacao ? (
-                            <><CheckCircle size={20}/>Localização Salva!</>
-                        ) : (
-                            <><MapPin size={20}/> Usar meu GPS atual</>
-                        )}
-                    </button>
-
                     <div style={{ height: '250px', width: '100%', marginTop: '20px', borderRadius: '10px', overflow: 'hidden', border: '2px solid #e2e8f0' }}>
                         <MapContainer 
-                            center={localizacao ? [localizacao.lat, localizacao.lon] : [-12.9714, -38.5014]} // Começa em Salvador
+                            center={localizacao ? [localizacao.lat, localizacao.lon] : [-12.9714, -38.5014]}
                             zoom={13} 
                             style={{ height: '100%', width: '100%' }}
                         >
@@ -236,12 +191,11 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
                                 <>
                                     <Marker
                                         position={[localizacao.lat, localizacao.lon]}
-                                        draggable={true} // Isso é a mágica! Permite arrastar.
+                                        draggable={true}
                                         eventHandlers={{
                                             dragend: (e) => {
                                                 const marker = e.target;
                                                 const position = marker.getLatLng();
-                                                // Atualiza as coordenadas quando o usuário soltar o pino
                                                 setLocalizacao({ lat: position.lat, lon: position.lng });
                                                 toast.success("Pino ajustado manualmente com sucesso!");
                                             }
