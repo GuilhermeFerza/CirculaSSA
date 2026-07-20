@@ -73,7 +73,8 @@ export default function VagasSalvas(){
                                 <MapPin size={16}/>{vaga.bairro}
                             </p>
                             <p className="info-empresa" style={{marginBottom: '0', marginTop: '8px'}}>
-                                <strong>Empresa:</strong> {vaga.empresa}
+                                <strong >Empresa:</strong> {vaga.empresa}<br></br>
+                                <strong>Contato:</strong>{vaga.link_contato}
                             </p>
                             <div className="acoes-card">
                                 <button

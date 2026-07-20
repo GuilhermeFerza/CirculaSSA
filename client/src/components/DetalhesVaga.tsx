@@ -92,8 +92,8 @@ export default function DetalhesVaga({setVagaSelecionada, vagaSelecionada, onFil
               &bull; <strong>Local:</strong> {vagaSelecionada.bairro}
             </p>
 
-            <p className="descricao-vaga">{vagaSelecionada.descricao}</p>
-            
+            <p className="descricao-vaga">Descrição: {vagaSelecionada.descricao}</p>
+            <p className="contato-vaga">Link para contato:{vagaSelecionada.link_contato}</p>
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
               <button
                 className='btn-submit'
