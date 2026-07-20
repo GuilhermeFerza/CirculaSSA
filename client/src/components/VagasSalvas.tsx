@@ -65,7 +65,6 @@ export default function VagasSalvas(){
                 ) : (
                     vagasFavoritas.map((vaga) => (
                         <div key={vaga.id} className="card-vaga-empresa">
-                            {/* ... O miolo do seu card continua idêntico ... */}
                             <div className="cabecalho-card">
                                 <h3>{vaga.titulo}</h3>
                                 <span className="tag-tipo">{vaga.tipo}</span>

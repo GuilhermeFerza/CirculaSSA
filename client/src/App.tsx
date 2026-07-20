@@ -12,6 +12,7 @@ import DetalhesVaga from './components/DetalhesVaga';
 import Register from './components/Register';
 import Login from './components/Login';
 import { Toaster } from 'react-hot-toast';
+import { fetchAuth } from './utils/api';
 
 export interface Vaga {
   id: number;
@@ -58,17 +59,34 @@ export default function App() {
   });
 
   const API_URL = import.meta.env.VITE_API_URL;
-  const buscarVagas = useCallback((lat: number, lon: number, raio: number) => {
-    fetch(`${API_URL}/api/vaga?lat=${lat}&lon=${lon}&raio=${raio}`)
-      .then((resposta) => resposta.json())
-      .then((dados) => {
-        if (dados.erro) {
+
+  const buscarVagas = useCallback( async (lat: number, lon: number, raio: number) => {
+    try{
+      if (perfilUsuario === 'empresa'){
+        const response = await fetchAuth(`${API_URL}/api/vaga/minhas`, {
+          method: 'GET'
+        });
+
+        if (response.ok){
+          const dados = await response.json();
+          setVagas(dados || []);
+        }else{
           setVagas([]);
-        } else if (Array.isArray(dados)) {
+        }
+      }else{
+        const response = await fetch(`${API_URL}/api/vaga?lat=${lat}&lon=${lon}&raio=${raio}`);
+        const dados = await response.json();
+
+        if (dados.erro){
+          setVagas([])
+        }else if(Array.isArray(dados)){
           setVagas(dados);
         }
-      })
-      .catch((erro) => console.error("Erro ao buscar vagas:", erro));
+      }
+    } catch(erro){
+      console.error("erro ao buscar vagas: ", erro)
+      setVagas([]);
+    }
   }, []);
 
   

@@ -27,6 +27,9 @@ interface MapaPrincipalProps{
 
 function BuscadorDinamico({buscarVagas, abaAtiva, salvadorCentro, vagasFiltradas, setVagaSelecionada, mostrarFiltros, filtrosAtivos, alternarFiltro, bairrosDisponiveis, mostrarBairro, setMostrarBairro, setMostrarFiltros} : MapaPrincipalProps) {
 
+    const tipo = localStorage.getItem('perfilUsuario');
+
+
     const timerRef = useRef<number | null>(null);
 
 

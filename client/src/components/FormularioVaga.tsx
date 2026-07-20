@@ -65,12 +65,20 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
         setBuscandoEndereco(true);
         try{
 
-            const enderecoCompleto = `${rua}, ${bairro}, Salvador, Bahia, Brasil`;
+            let query = numero
+                ? encodeURIComponent(`${rua}, ${numero}, ${bairro}, Salvador, Bahia, Brasil`)
+                : encodeURIComponent(`${rua}, ${bairro}, Salvador, Bahia, Brasil`);
 
 
-            const query = encodeURIComponent(enderecoCompleto);
-            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`)
-            const data = await response.json();
+            let response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`)
+            let data = await response.json();
+
+            if ((!data || data.length === 0) && numero){
+                console.log("Numero ao mapeado na OSM, buscando localizacao geral");
+                query = encodeURIComponent(`${rua}, ${bairro}, Salvador, Bahia, Brasil`);
+                response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`);
+                data = await response.json();
+            }
 
             if(data && data.length > 0){
                 setLocalizacao({
@@ -79,7 +87,7 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
                 });
                 toast.success("Localização encontrada com sucesso no mapa!");
             }else{
-                toast.error("Endereço não encontrado. Tente colocar a rua e o bairro.")
+                toast.error("Endereço não encontrado. Verifique a ortografia da rua e do bairro.")
             }
         }catch(error){
             console.error("Erro na busca de endereço:", error);
@@ -168,6 +176,15 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
                     <label>Bairro (Sede ou Local de Trabalho)</label>
                     <input type='text' placeholder='Ex: Caminho das Árvores' value={bairro} onChange={(e) => setBairro(e.target.value)} required/>
                 </div>
+                <div className='grupo-input'>
+                    <label>Rua</label>
+                    <input type='text' placeholder='Ex: Rua A' value={rua} onChange={(e) => setRua(e.target.value)} required/>
+                </div>
+
+                <div className='grupo-input'>
+                    <label>Número (Opcional)</label>
+                    <input type='text' placeholder='Ex: 144' value={numero} onChange={(e) => setNumero(e.target.value)} />
+                </div>
 
                 <div className='grupo-input'>
                     <label>Descrição e Requisitos</label>
@@ -178,15 +195,6 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
                     <h3>Localização no Mapa</h3>
                     <p>Informe o endereço exato para cravarmos o pino no mapa em uma localização geral.(otilizar o "Usar meu GPS Atual" é mais preciso. Lembre-se de digitar o bairro)</p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', marginBottom: '12px' }}>
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <input 
-                                type="text" 
-                                placeholder="Rua / Avenida (Ex: Av. Tancredo Neves)" 
-                                value={rua}
-                                onChange={(e) => setRua(e.target.value)}
-                                style={{ flex: 2, padding: '12px', borderRadius: '10px', border: '1px solid #bae6fd' }}
-                            />
-                        </div>
                         <button 
                             onClick={buscarCoordenadasPorEndereco}
                             style={{ padding: '12px 20px', borderRadius: '10px', backgroundColor: '#0ea5e9', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}

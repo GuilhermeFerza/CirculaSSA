@@ -1,4 +1,4 @@
-import { Map, PersonStanding, PlusCircle, User} from 'lucide-react'
+import { Map, Bookmark, PersonStanding, PlusCircle, User} from 'lucide-react'
 
 
 interface MenuInferiorProps{
@@ -12,12 +12,14 @@ interface MenuInferiorProps{
 
 export default function MenuInferior({ perfilUsuario, abaAtiva, setMostrarFiltros, setAbaAtiva}: MenuInferiorProps){
 
+    const tipo = localStorage.getItem('perfilUsuario')
+
     return(
         <>
             {perfilUsuario && (
                 <nav className='bottom-nav'>
 
-                    {perfilUsuario === 'candidato' && (
+                    {tipo === 'candidato' && (
                         <>
                             <button
                                 className={`nav-item ${abaAtiva === 'mapa' ? 'ativo': ''}`}
@@ -41,8 +43,17 @@ export default function MenuInferior({ perfilUsuario, abaAtiva, setMostrarFiltro
                         </>
                     )}
                     
-                    {perfilUsuario === 'empresa' && (
+                    {tipo === 'empresa' && (
                         <>
+                            <button
+                                className={`nav-item ${abaAtiva === 'mapa' ? 'ativo' : ''}`}
+                                onClick={ () => {
+                                    setAbaAtiva('mapa');
+                                    setMostrarFiltros(false);
+                                }}
+                            >
+                                <Map size={22}/> Mapa
+                            </button>
                             <button
                                 className={`nav-item ${abaAtiva === 'painel-empresa' ? 'ativo' : ''}`}
                                 onClick={ () => {
@@ -50,7 +61,7 @@ export default function MenuInferior({ perfilUsuario, abaAtiva, setMostrarFiltro
                                     setMostrarFiltros(false);
                                 }}
                             >   
-                                <Map size={22} /> Minhas Vagas
+                                <Bookmark size={22} /> Minhas Vagas
                             </button>
                             <button
                                 className={`nav-item ${abaAtiva === 'nova-vaga' ? 'ativo' : ''}`}
