@@ -892,3 +892,31 @@ button:focus {
   opacity: 1;
   max-height: 30px;
 }
+
+.input-senha-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-senha-container input {
+  width: 100%;
+  padding-right: 48px;
+}
+.btn-toggle-senha {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+.btn-toggle-senha:hover {
+  color: #64748b;
+}

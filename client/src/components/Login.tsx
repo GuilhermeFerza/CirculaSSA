@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import toast from "react-hot-toast"
 import { fetchAuth } from '../utils/api';
+import { Eye, EyeOff } from "lucide-react"
 
 interface LoginProps{
     setAbaAtiva: (saa: string) => void
@@ -13,6 +14,7 @@ export default function Login({setAbaAtiva, setPerfilUsuario}:LoginProps){
     const [password, setPassword] = useState('');
     const [aviso, setAviso] = useState("aviso");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) =>{
         e.preventDefault();
@@ -55,6 +57,7 @@ export default function Login({setAbaAtiva, setPerfilUsuario}:LoginProps){
         setIsSubmitting(false);
     }
 
+
     return(
         <div className="login-container">
             <div className="login-card">
@@ -70,7 +73,12 @@ export default function Login({setAbaAtiva, setPerfilUsuario}:LoginProps){
 
                     <div className="grupo-input">
                         <label>Senha</label>
-                        <input type="password" placeholder="Digite sua senha" value={password} onChange={(e)=> setPassword(e.target.value)} required />
+                        <div className="input-senha-container">
+                            <input type={showPassword ? "text" : "password"} placeholder="Digite sua senha" value={password} onChange={(e)=> setPassword(e.target.value)} required />
+                            <button type="button" className="btn-toggle-senha" onClick={() => setShowPassword(!showPassword)}>
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
                     </div>
 
                     <button type="submit" className="btn-submit">
