@@ -55,3 +55,7 @@ prefeitura
 empresas anunciando vagas
 instituições de ensino
 anúncios patrocinados
+
+comandos:
+iniciar api - go run main.go
+inciar client - npm run dev
