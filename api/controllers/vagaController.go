@@ -19,10 +19,15 @@ func (vc *VagaController) GetVagas(c *gin.Context) {
 	lonStr := c.Query("lon")
 	raioStr := c.Query("raio")
 
+	empresaFiltro := c.Query("empresa")
+
 	var rows *sql.Rows
 	var err error
 
-	if lasStr != "" && lonStr != "" {
+	if empresaFiltro != "" {
+		query := `SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato, parceria_academica FROM vagas WHERE empresa = $1 LIMIT 150`
+		rows, err = vc.DB.Query(query, empresaFiltro)
+	} else if lasStr != "" && lonStr != "" {
 		lat, _ := strconv.ParseFloat(lasStr, 64)
 		lon, _ := strconv.ParseFloat(lonStr, 64)
 
@@ -32,19 +37,19 @@ func (vc *VagaController) GetVagas(c *gin.Context) {
 		}
 
 		query := `
-						SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato
-						FROM vagas
-						WHERE ST_DWithin(
-							geom::geography,
-							ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
-							$3
-						)
-						LIMIT 150	
-						`
+			SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato, parceria_academica
+			FROM vagas
+			WHERE ST_DWithin(
+				geom::geography,
+				ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
+				$3
+			)
+			LIMIT 150	
+		`
 		rows, err = vc.DB.Query(query, lon, lat, raio)
 
 	} else {
-		rows, err = vc.DB.Query("SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato FROM vagas LIMIT 150")
+		rows, err = vc.DB.Query("SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato, parceria_academica FROM vagas LIMIT 150")
 	}
 
 	if err != nil {
@@ -57,7 +62,7 @@ func (vc *VagaController) GetVagas(c *gin.Context) {
 	var vagas []models.Vaga
 	for rows.Next() {
 		var v models.Vaga
-		if err := rows.Scan(&v.ID, &v.Titulo, &v.Descricao, &v.Empresa, &v.Tipo, &v.Bairro, &v.Latitude, &v.Longitude, &v.LinkContato); err == nil {
+		if err := rows.Scan(&v.ID, &v.Titulo, &v.Descricao, &v.Empresa, &v.Tipo, &v.Bairro, &v.Latitude, &v.Longitude, &v.LinkContato, &v.Parceria); err == nil {
 			vagas = append(vagas, v)
 		}
 	}
@@ -87,14 +92,14 @@ func (vc *VagaController) PostVagas(c *gin.Context) {
 	}
 
 	sqlStatement := `
-				INSERT INTO vagas (titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato, geom, user_id)
-				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, ST_SetSRID(ST_MakePoint($7, $6), 4326), (SELECT id FROM users WHERE email = $9))
+				INSERT INTO vagas (titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato, parceria_academica, geom, user_id)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, ST_SetSRID(ST_MakePoint($7, $6), 4326), (SELECT id FROM users WHERE email = $10))
 				RETURNING id
 			`
 
 	err := vc.DB.QueryRow(sqlStatement,
 		novaVaga.Titulo, novaVaga.Descricao, novaVaga.Empresa,
-		novaVaga.Tipo, novaVaga.Bairro, novaVaga.Latitude, novaVaga.Longitude, novaVaga.LinkContato, emailToken,
+		novaVaga.Tipo, novaVaga.Bairro, novaVaga.Latitude, novaVaga.Longitude, novaVaga.LinkContato, novaVaga.Parceria, emailToken,
 	).Scan(&novaVaga.ID)
 
 	if err != nil {
@@ -128,9 +133,8 @@ func (vc *VagaController) PutVagas(c *gin.Context) {
 
 	sqlStatement := `
 				UPDATE vagas
-				SET titulo = $1, descricao =$2, empresa = $3, tipo = $4, bairro = $5, latitude = $6, longitude = $7, link_contato = $8, geom = ST_SetSRID(ST_MakePoint($7, $6), 4326)
-				WHERE id = $9 AND user_id = (SELECT id FROM users WHERE email = $10)
-
+				SET titulo = $1, descricao = $2, empresa = $3, tipo = $4, bairro = $5, latitude = $6, longitude = $7, link_contato = $8, parceria_academica = $9, geom = ST_SetSRID(ST_MakePoint($7, $6), 4326)
+				WHERE id = $10 AND user_id = (SELECT id FROM users WHERE email = $11)
 			`
 	res, err := vc.DB.Exec(sqlStatement,
 		vagaAtualizada.Titulo,
@@ -141,6 +145,7 @@ func (vc *VagaController) PutVagas(c *gin.Context) {
 		vagaAtualizada.Latitude,
 		vagaAtualizada.Longitude,
 		vagaAtualizada.LinkContato,
+		vagaAtualizada.Parceria,
 		id,
 		emailToken,
 	)
@@ -207,7 +212,7 @@ func (vc *VagaController) GetMinhasVagas(c *gin.Context) {
 	emailToken, _ := c.Get("userEmail")
 
 	query := `
-				SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato
+				SELECT id, titulo, descricao, empresa, tipo, bairro, latitude, longitude, link_contato, parceria_academica
 				FROM vagas
 				WHERE user_id = (SELECT id FROM users WHERE email = $1)
 			`
@@ -222,7 +227,7 @@ func (vc *VagaController) GetMinhasVagas(c *gin.Context) {
 	var minhasVagas []models.Vaga
 	for rows.Next() {
 		var v models.Vaga
-		if err := rows.Scan(&v.ID, &v.Titulo, &v.Descricao, &v.Empresa, &v.Tipo, &v.Bairro, &v.Latitude, &v.Longitude, &v.LinkContato); err == nil {
+		if err := rows.Scan(&v.ID, &v.Titulo, &v.Descricao, &v.Empresa, &v.Tipo, &v.Bairro, &v.Latitude, &v.Longitude, &v.LinkContato, &v.Parceria); err == nil {
 			minhasVagas = append(minhasVagas, v)
 		}
 	}

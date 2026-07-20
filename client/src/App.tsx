@@ -24,6 +24,7 @@ export interface Vaga {
   latitude: number;
   longitude: number;
   link_contato: string;
+  parceira: boolean;
 }
 
 export default function App() {

@@ -24,6 +24,7 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
     const [rua, setRua] = useState('');
     const [numero, setNumero] = useState('');
     const [buscandoEndereco, setBuscandoEndereco]=useState(false);
+    const [parceria, setParceria] = useState(false);
 
     const[localizacao, setLocalizacao] = useState<{lat: number, lon: number} | null>(null)
 
@@ -85,7 +86,8 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
             bairro,
             latitude: localizacao.lat,
             longitude: localizacao.lon,
-            link_contato: linkContato
+            link_contato: linkContato,
+            parceria: parceria
         };
 
         console.log("Vaga pronta para ir no backend:", dadosVagas)
@@ -144,6 +146,37 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
                         <option value="Mutirão">Mutirão</option>
                     </select>
                 </div>
+
+                <div className='grupo-input' style={{ marginTop: '5px', marginBottom: '15px' }}>
+    <label 
+        htmlFor="checkParceria" 
+        style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px', 
+            cursor: 'pointer', 
+            fontWeight: 500,
+            margin: 0,
+            color: '#1e293b'
+        }}
+    >
+        <input 
+            type="checkbox" 
+            id="checkParceria"
+            checked={parceria} 
+            onChange={(e) => setParceria(e.target.checked)} 
+            style={{ 
+                width: '18px', 
+                height: '18px', 
+                cursor: 'pointer', 
+                margin: 0,
+                accentColor: '#1e293b',
+                flexShrink: 0 
+            }}
+        />
+        Vaga com Parceria Acadêmica (Ex: Convênio Universitário)
+    </label>
+</div>
 
                 <div className='grupo-input'>
                     <label>Bairro (Sede ou Local de Trabalho)</label>
