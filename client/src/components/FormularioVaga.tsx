@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CheckCircle, MapPin, Send } from 'lucide-react'
 import { Vaga } from '../App';
 import toast from 'react-hot-toast';
 import { fetchAuth } from '../utils/api';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 interface FormularioVagaProps{
     adicionarVagaNaLista: (vaga: Vaga) => void;
@@ -219,6 +221,43 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
                             <><MapPin size={20}/> Usar meu GPS atual</>
                         )}
                     </button>
+
+                    <div style={{ height: '250px', width: '100%', marginTop: '20px', borderRadius: '10px', overflow: 'hidden', border: '2px solid #e2e8f0' }}>
+                        <MapContainer 
+                            center={localizacao ? [localizacao.lat, localizacao.lon] : [-12.9714, -38.5014]} // Começa em Salvador
+                            zoom={13} 
+                            style={{ height: '100%', width: '100%' }}
+                        >
+                            <TileLayer 
+                                attribution='<a href="https://carto.com/attributions">CARTO</a>'
+                                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                            />
+                            {localizacao && (
+                                <>
+                                    <Marker
+                                        position={[localizacao.lat, localizacao.lon]}
+                                        draggable={true} // Isso é a mágica! Permite arrastar.
+                                        eventHandlers={{
+                                            dragend: (e) => {
+                                                const marker = e.target;
+                                                const position = marker.getLatLng();
+                                                // Atualiza as coordenadas quando o usuário soltar o pino
+                                                setLocalizacao({ lat: position.lat, lon: position.lng });
+                                                toast.success("Pino ajustado manualmente com sucesso!");
+                                            }
+                                        }}
+                                    />
+                                    <RecenterMap lat={localizacao.lat} lon={localizacao.lon} />
+                                </>
+                            )}
+                        </MapContainer>
+                    </div>
+                    {localizacao && (
+                        <p style={{ fontSize: '0.85rem', color: '#ef4444', textAlign: 'center', marginTop: '10px', fontWeight: 'bold' }}>
+                            O pino está no lugar errado? Arraste-o com o dedo/mouse para o local exato da vaga!
+                        </p>
+                    )}
+
                 </div>
 
                 <div className="grupo-input">
@@ -238,4 +277,12 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
             </form>
         </div>
     );
+}
+
+function RecenterMap({lat, lon}: {lat: number, lon: number}){
+    const map = useMap();
+    useEffect(()=>{
+        map.flyTo([lat, lon], 17);
+    }, [lat, lon, map]);
+    return null;
 }
