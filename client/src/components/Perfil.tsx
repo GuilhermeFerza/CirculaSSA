@@ -97,6 +97,45 @@ export default function Perfil({perfilUsuario, setPerfilUsuario, setAbaAtiva}: P
 
   }
 
+  const ativarAlerta = ()=>{
+    if ("geolocation" in navigator){
+      toast.loading("Buscando sua localização...", { id: "geo-toast"})
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          toast.dismiss("geo-toast");
+
+          const dadosParaSalvar = {
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+            raio_alerta: 5,
+            recebe_alerta: true
+          };
+          try{
+            const API_URL = import.meta.env.VITE_API_URL;
+            const response = await fetchAuth(`${API_URL}/api/users`, {
+              method: 'PUT',
+              headers: {"Content-Type": "application/json"},
+              body: JSON.stringify(dadosParaSalvar)
+            });
+            if (response.ok){
+              toast.success("Alertas de vagas ativados para sua região!");
+            }else{
+              toast.error("Erro ao salvar sua localização.");
+            }
+          }catch(error){
+            toast.error("Erro ao comunicar com a API.")
+          }
+        },
+        (error) => {
+          console.error("Erro ao pegar localizacao", error);
+          toast.error("Precisamos de permissão para ler sua localização e ativar os alertas!");
+        }
+      )
+    }
+  }
+
+
   useEffect(()=>{
     carregarDados();
   }, [])
@@ -116,12 +155,21 @@ export default function Perfil({perfilUsuario, setPerfilUsuario, setAbaAtiva}: P
                 {perfilUsuario === 'candidato' ? 'buscando vagas' : 'empresa'}
               </span>
             </div>
-            <button className='btn-sair' onClick={sairDoPerfil}>
-              Sair / Trocar de Perfil
-            </button>
+            {perfilUsuario === 'candidato' && (
+              <div style={{width: "100%"}}>
+                <p className='pequeno-texto'>Quer ser avisado de vagas perto de você?</p>
+                <button onClick={ativarAlerta} className='btn-loc'>
+                    Ativar Alertas (5km)
+                </button>
+              </div>
+            )}
             <button className='btn-edit' onClick={editarVaga}>
               Editar Perfil
             </button>
+            <button className='btn-sair' onClick={sairDoPerfil}>
+              Sair / Trocar de Perfil
+            </button>
+            
           </div>
           )}
           

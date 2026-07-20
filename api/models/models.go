@@ -18,11 +18,15 @@ type Vaga struct {
 }
 
 type User struct {
-	ID       int    `json:"id"`
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Name     string `json:"name" binding:"required"`
-	Type     string `json:"type" binding:"required"`
+	ID           int     `json:"id"`
+	Email        string  `json:"email" binding:"required"`
+	Password     string  `json:"password" binding:"required"`
+	Name         string  `json:"name" binding:"required"`
+	Type         string  `json:"type" binding:"required"`
+	Lat          float64 `json:"lat"`
+	Lon          float64 `json:"lon"`
+	RaioAlerta   int     `json:"raio_alerta"`
+	RecebeAlerta bool    `json:"recebe_alerta"`
 }
 
 type CredenciasLogin struct {

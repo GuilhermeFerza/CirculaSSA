@@ -12,6 +12,14 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+type UpdateUserInput struct {
+	Name         string  `json:"name"`
+	Lat          float64 `json:"lat"`
+	Lon          float64 `json:"lon"`
+	RaioAlerta   int     `json:"raio_alerta"`
+	RecebeAlerta bool    `json:"recebe_alerta"`
+}
+
 type UserController struct {
 	DB     *sql.DB
 	JwtKey []byte
@@ -116,34 +124,67 @@ func (uc *UserController) PutUsers(c *gin.Context) {
 		return
 	}
 
-	var perfilAtualizado struct {
-		Name string `json:"name" binding:"required"`
-	}
-	if err := c.ShouldBindJSON(&perfilAtualizado); err != nil {
+	var dadosEntrada UpdateUserInput
+
+	if err := c.ShouldBindJSON(&dadosEntrada); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"erro": "Formato de JSON inválido", "detalhes": err.Error()})
 		return
 	}
 
-	sqlStatement := `
-		UPDATE users
-		SET name = $1
-		WHERE email = $2
-	`
+	if dadosEntrada.Name != "" {
+		sqlStatement := `
+			UPDATE users
+			SET name = $1
+			WHERE email = $2
+		`
+		res, err := uc.DB.Exec(sqlStatement, dadosEntrada.Name, emailToken)
 
-	res, err := uc.DB.Exec(sqlStatement, perfilAtualizado.Name, emailToken)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"erro": "Erro interno ao atualizar perfil"})
+			return
+		}
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"erro": "Erro interno ao atualizar perfil"})
+		count, err := res.RowsAffected()
+		if err != nil || count == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"erro": "Usuário não encontrado"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"mensagem": "Perfil atualizado com sucesso"})
 		return
 	}
 
-	count, err := res.RowsAffected()
-	if err != nil || count == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"erro": "Erro interno ao atualizar perfil"})
+	if dadosEntrada.RaioAlerta > 0 {
+		sqlStatement := `
+			UPDATE users 
+			SET lat = $1, lon = $2, raio_alerta = $3, recebe_alerta = $4 
+			WHERE email = $5
+		`
+		res, err := uc.DB.Exec(sqlStatement,
+			dadosEntrada.Lat,
+			dadosEntrada.Lon,
+			dadosEntrada.RaioAlerta,
+			dadosEntrada.RecebeAlerta,
+			emailToken,
+		)
+
+		if err != nil {
+			log.Printf("[DB/ERROR] Falha ao salvar localização: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"erro": "Falha ao atualizar localização"})
+			return
+		}
+
+		count, err := res.RowsAffected()
+		if err != nil || count == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"erro": "Usuário não encontrado"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"mensagem": "Alertas ativados com sucesso"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"mensagem": "perfil atualizado com sucesso"})
+	c.JSON(http.StatusBadRequest, gin.H{"erro": "Nenhum dado válido enviado para atualização"})
 
 }
 

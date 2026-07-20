@@ -108,6 +108,47 @@ func (vc *VagaController) PostVagas(c *gin.Context) {
 		return
 	}
 
+	var candidatosAlvo []models.User
+
+	queryAlertas := `
+		SELECT id, email, lat, lon, raio_alerta 
+		FROM users 
+		WHERE recebe_alerta = true 
+		AND ST_DWithin(
+			ST_MakePoint(lon, lat)::geography, 
+			ST_MakePoint($1, $2)::geography, 
+			raio_alerta * 1000
+		)
+	`
+
+	rows, err := vc.DB.Query(queryAlertas, novaVaga.Longitude, novaVaga.Latitude)
+
+	if err != nil {
+		log.Printf("[ALERTA/ERROR] Erro ao buscar candidatos na região: %v", err)
+	} else {
+		defer rows.Close()
+
+		for rows.Next() {
+			var candidato models.User
+
+			err := rows.Scan(
+				&candidato.ID,
+				&candidato.Email,
+				&candidato.Lat,
+				&candidato.Lon,
+				&candidato.RaioAlerta,
+			)
+
+			if err != nil {
+				log.Printf("[ALERTA/ERROR] Erro ao ler dados do candidato: %v", err)
+				continue
+			}
+			candidatosAlvo = append(candidatosAlvo, candidato)
+		}
+	}
+
+	log.Printf("[ALERTA] %d candidatos encontrados no raio da vaga!", len(candidatosAlvo))
+
 	c.JSON(http.StatusCreated, novaVaga)
 }
 
