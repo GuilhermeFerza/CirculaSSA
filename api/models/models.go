@@ -13,7 +13,7 @@ type Vaga struct {
 	Bairro      string  `json:"bairro" binding:"required"`
 	Latitude    float64 `json:"latitude" binding:"required"`
 	Longitude   float64 `json:"longitude" binding:"required"`
-	LinkContato string  `json:"link_contato" binding:"required,url"`
+	LinkContato string  `json:"link_contato" binding:"required"`
 	Parceria    bool    `json:"parceria"`
 }
 

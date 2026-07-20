@@ -24,7 +24,7 @@ export interface Vaga {
   latitude: number;
   longitude: number;
   link_contato: string;
-  parceira: boolean;
+  parceria: boolean;
 }
 
 export default function App() {
@@ -40,6 +40,7 @@ export default function App() {
   const [mostrarBairro, setMostrarBairro] = useState<string>('');
   const salvadorCentro: [number, number] = [-12.9714, -38.5014];
   const [termoBusca, setTermoBusca] = useState('');
+  
 
   const alternarFiltro = (tipo: string) => {
     if (filtrosAtivos.includes(tipo)) {
@@ -61,7 +62,7 @@ export default function App() {
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const buscarVagas = useCallback( async (lat: number, lon: number, raio: number) => {
+  const buscarVagas = useCallback( async (lat: number, lon: number, raio: number, empresa: string = '') => {
     try{
       if (perfilUsuario === 'empresa'){
         const response = await fetchAuth(`${API_URL}/api/vaga/minhas`, {
@@ -75,11 +76,18 @@ export default function App() {
           setVagas([]);
         }
       }else{
-        const response = await fetch(`${API_URL}/api/vaga?lat=${lat}&lon=${lon}&raio=${raio}`);
+        let url =`${API_URL}/api/vaga?`;
+        if(empresa){
+          url += `empresa=${encodeURIComponent(empresa)}`
+        }else{
+          url += `lat=${lat}&lon=${lon}&raio=${raio}`;
+        }
+
+        const response = await fetch(url)
         const dados = await response.json();
 
-        if (dados.erro){
-          setVagas([])
+        if(dados.erro){
+          setVagas([]);
         }else if(Array.isArray(dados)){
           setVagas(dados);
         }
@@ -88,7 +96,7 @@ export default function App() {
       console.error("erro ao buscar vagas: ", erro)
       setVagas([]);
     }
-  }, []);
+  }, [perfilUsuario, API_URL]);
 
   
 
@@ -214,6 +222,10 @@ export default function App() {
           <DetalhesVaga 
             setVagaSelecionada={setVagaSelecionada}
             vagaSelecionada={vagaSelecionada}
+            onFiltrarEmpresa={(nomeEmpresa) => {
+              buscarVagas(salvadorCentro[0], salvadorCentro[1], 5000, nomeEmpresa);
+              setVagaSelecionada(null); // Fecha o card para mostrar as vagas filtradas no mapa
+            }}
           />
           <MenuInferior
             perfilUsuario={perfilUsuario}
