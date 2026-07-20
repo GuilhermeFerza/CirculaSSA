@@ -74,7 +74,7 @@ export default function DetalhesVaga({setVagaSelecionada, vagaSelecionada, onFil
               {vagaSelecionada.titulo}
               {vagaSelecionada.parceria && (
                 <span style={{ backgroundColor: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0', padding: '2px 8px', borderRadius: '12px', fontSize: '0.65rem', fontWeight: 'bold' }}>
-                  🎓 Parceria Acadêmica
+                  Parceria Acadêmica
                 </span>
               )}
             </h2>

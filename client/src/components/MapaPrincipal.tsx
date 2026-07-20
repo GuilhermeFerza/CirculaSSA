@@ -4,7 +4,9 @@ import '../App.css'
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import { Vaga } from '../App';
 import Filtros from './Filtros';
-
+import L from 'leaflet'
+import { GraduationCap } from 'lucide-react'
+import { renderToString } from 'react-dom/server';
 
 interface MapaPrincipalProps{
     abaAtiva: string
@@ -24,6 +26,22 @@ interface MapaPrincipalProps{
 }
 
 
+const iconePadrao = new L.Icon({
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
+});
+
+const iconeParceria = L.divIcon({
+  className: 'custom-pin-parceria',
+  html: `<div style="background-color: #15803d; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.4);">
+           ${renderToString(<GraduationCap size={18} color="white" strokeWidth={2.5} />)}
+         </div>`,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32]
+});
 
 function BuscadorDinamico({buscarVagas, abaAtiva, salvadorCentro, vagasFiltradas, setVagaSelecionada, mostrarFiltros, filtrosAtivos, alternarFiltro, bairrosDisponiveis, mostrarBairro, setMostrarBairro, setMostrarFiltros} : MapaPrincipalProps) {
 
@@ -93,9 +111,12 @@ export default function MapaPrincipal({abaAtiva, salvadorCentro, buscarVagas, va
                         />
                         {vagasFiltradas.map((vaga)=>(
                             <Marker 
-                                key={vaga.id}
+                                key={vaga.id} 
                                 position={[vaga.latitude, vaga.longitude]}
-                                eventHandlers={{click: () => setVagaSelecionada(vaga)}}
+                                icon={vaga.parceria ? iconeParceria : iconePadrao}
+                                eventHandlers={{
+                                    click: () => setVagaSelecionada(vaga)
+                                }}
                             />
                         ))}
                     </MapContainer>

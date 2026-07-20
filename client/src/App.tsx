@@ -65,6 +65,13 @@ export default function App() {
   const buscarVagas = useCallback( async (lat: number, lon: number, raio: number, empresa: string = '') => {
     try{
       if (perfilUsuario === 'empresa'){
+
+        const token = localStorage.getItem('token')
+        if(!token){
+          setVagas([]);
+          return
+        }
+
         const response = await fetchAuth(`${API_URL}/api/vaga/minhas`, {
           method: 'GET'
         });
