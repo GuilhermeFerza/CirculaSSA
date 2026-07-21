@@ -98,7 +98,7 @@ func main() {
 		api.GET("/login", AuthMiddleware(), userCtrl.GetUsers)
 		api.POST("/register", userCtrl.GetNewUsers)
 		api.PUT("/users", AuthMiddleware(), userCtrl.PutUsers)
-		r.GET("/notificacoes", AuthMiddleware(), notificacaoController.GetNotif)
+		api.GET("/notificacoes", AuthMiddleware(), notificacaoController.GetNotif)
 
 	}
 
