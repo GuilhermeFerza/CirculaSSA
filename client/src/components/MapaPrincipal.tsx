@@ -131,6 +131,14 @@ export default function MapaPrincipal({abaAtiva, salvadorCentro, buscarVagas, va
                         setMostrarFiltros = {setMostrarFiltros}
                         termoBusca = {termoBusca}
                         setTermoBusca = {setTermoBusca}
+                        aoClicarNotificacao={(vagaId) => {
+                            const vagaAlvo = vagasFiltradas.find(v => v.id === vagaId);
+                            if (vagaAlvo) {
+                                setVagaSelecionada(vagaAlvo);
+                            } else {
+                                alert("Esta vaga pode ter sido fechada ou está fora dos seus filtros atuais.");
+                            }
+                        }}
                     />
 
                 </>

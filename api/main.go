@@ -99,6 +99,7 @@ func main() {
 		api.POST("/register", userCtrl.GetNewUsers)
 		api.PUT("/users", AuthMiddleware(), userCtrl.PutUsers)
 		api.GET("/notificacoes", AuthMiddleware(), notificacaoController.GetNotif)
+		api.PUT("/notificacoes/:id/lida", AuthMiddleware(), notificacaoController.MarcarComoLida)
 
 	}
 

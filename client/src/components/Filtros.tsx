@@ -14,9 +14,10 @@ interface FiltrosProps{
     setMostrarFiltros: (smf: boolean) => void
     termoBusca: string
     setTermoBusca: (stb: string) => void
+    aoClicarNotificacao?: (vagaId: number) => void
 }
 
-export default function Filtros({mostrarFiltros, filtrosAtivos, alternarFiltro, bairrosDisponiveis, mostrarBairro, setMostrarBairro, setMostrarFiltros, termoBusca, setTermoBusca}:FiltrosProps){
+export default function Filtros({mostrarFiltros, filtrosAtivos, alternarFiltro, bairrosDisponiveis, mostrarBairro, setMostrarBairro, setMostrarFiltros, termoBusca, setTermoBusca, aoClicarNotificacao}:FiltrosProps){
 
     const [notificacoes, setNotificacoes] = useState<any[]>([])
     const [mostrarNotificacoes, setMostrarNotificacoes] = useState(false)
@@ -41,9 +42,30 @@ export default function Filtros({mostrarFiltros, filtrosAtivos, alternarFiltro, 
                 toast.error("Erro ao puxar notificações")
             }
         };
-       carregarNotificacoes(); 
+        carregarNotificacoes(); 
+
+        const intervalo = setInterval(carregarNotificacoes, 30000);
+        return () => clearInterval(intervalo);
+
     },[]);
     
+    const handleCliqueNotificacao = async (notif: any) =>{
+        if (aoClicarNotificacao){
+            aoClicarNotificacao(notif.vaga_id);
+        }
+        setMostrarNotificacoes(false)
+
+        if(!notif.lida){
+            try{
+                const API_URL = import.meta.env.VITE_API_URL;
+                await fetchAuth(`${API_URL}/api/notificacoes/${notif.id}/lida`, {method: 'PUT'});
+                setNotificacoes(prev => prev.map(n => n.id === notif.id ? {...n, lida: true}: n))
+            }catch(erro){
+                console.error("Erro ao marcar como lida", erro);
+            }
+        }
+    }
+
     const toggleFiltros = () => {
         setMostrarFiltros(!mostrarFiltros);
         if (mostrarNotificacoes) setMostrarNotificacoes(false);
@@ -54,6 +76,8 @@ export default function Filtros({mostrarFiltros, filtrosAtivos, alternarFiltro, 
         if (mostrarFiltros) setMostrarFiltros(false);
     }
 
+    const qtdNaoLidas = notificacoes.filter(n => !n.lida).length;
+
     return (
         <>
             <div className="container-acoes-topo">
@@ -62,8 +86,8 @@ export default function Filtros({mostrarFiltros, filtrosAtivos, alternarFiltro, 
                     onClick={toggleNotificacoes}
                 >
                     <Bell size={20} />
-                    {notificacoes.length > 0 && (
-                        <span className="badge-notificacao">{notificacoes.length}</span>
+                    {qtdNaoLidas > 0 && (
+                        <span className="badge-notificacao">{qtdNaoLidas}</span>
                     )}
                 </button>
 
@@ -129,7 +153,13 @@ export default function Filtros({mostrarFiltros, filtrosAtivos, alternarFiltro, 
                             <p className="texto-vazio-notif">Nenhuma vaga nova no seu radar por enquanto.</p>
                         ) : (
                             notificacoes.map((notif) => (
-                                <div key={notif.id} className="item-notificacao">
+                                <div 
+                                    key={notif.id} 
+                                    className="item-notificacao"
+                                    style={{ cursor: 'pointer', opacity: notif.lida ? 0.6 : 1 }}
+                                    onClick={() => handleCliqueNotificacao(notif)}
+                                >
+                                    {!notif.lida && <span style={{color: 'red', marginRight: '5px'}}>●</span>}
                                     <p>{notif.mensagem}</p>
                                     <small>{new Date(notif.criado_em).toLocaleDateString()}</small>
                                 </div>
