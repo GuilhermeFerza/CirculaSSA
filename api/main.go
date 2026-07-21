@@ -87,6 +87,7 @@ func main() {
 	vagaCtrl := &controllers.VagaController{DB: db}
 	userCtrl := &controllers.UserController{DB: db, JwtKey: jwtKey}
 	salvasCtrl := &controllers.SalvasController{DB: db}
+	notificacaoController := &controllers.NotificacaoController{DB: db}
 
 	r.Use(cors.New(config))
 
@@ -97,6 +98,7 @@ func main() {
 		api.GET("/login", AuthMiddleware(), userCtrl.GetUsers)
 		api.POST("/register", userCtrl.GetNewUsers)
 		api.PUT("/users", AuthMiddleware(), userCtrl.PutUsers)
+		r.GET("/notificacoes", AuthMiddleware(), notificacaoController.GetNotif)
 
 	}
 

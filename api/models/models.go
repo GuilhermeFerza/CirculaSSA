@@ -38,3 +38,11 @@ type Claims struct {
 	Email string `json:"email"`
 	jwt.RegisteredClaims
 }
+
+type Notificacao struct {
+	ID       int    `json:"id"`
+	VagaID   int    `json:"vaga_id"`
+	Mensagem string `json:"mensagem"`
+	Lida     bool   `json:"lida"`
+	CriadoEm string `json:"criado_em"`
+}
