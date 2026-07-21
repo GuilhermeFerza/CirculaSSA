@@ -27,6 +27,16 @@ export interface Vaga {
   parceria: boolean;
 }
 
+const normalizarTexto = (texto: string) => {
+  if (!texto) return '';
+  return texto
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 export default function App() {
   const [vagas, setVagas] = useState<Vaga[]>([]);
   const [vagaSelecionada, setVagaSelecionada] = useState<Vaga | null>(null);
@@ -50,11 +60,11 @@ export default function App() {
     }
   };
 
-  const bairrosDisponiveis = Array.from(new Set(vagas.map(v => v.bairro))).filter(Boolean).sort();
+  const bairrosDisponiveis = Array.from(new Set(vagas.map(v => normalizarTexto(v.bairro)))).filter(Boolean).sort();
 
   const vagasFiltradas = vagas.filter(vaga => {
     const passaFiltroTipo = filtrosAtivos.includes(vaga.tipo);
-    const passaFiltroBairro = mostrarBairro === '' || vaga.bairro === mostrarBairro;
+    const passaFiltroBairro = mostrarBairro === '' || normalizarTexto(vaga.bairro) === mostrarBairro;
 
     const passaBusca = termoBusca === '' || vaga.titulo.toLowerCase().includes(termoBusca.toLowerCase());
     return passaFiltroTipo && passaFiltroBairro && passaBusca;
