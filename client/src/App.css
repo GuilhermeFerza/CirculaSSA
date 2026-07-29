@@ -948,6 +948,7 @@ button:focus {
 }
 
 .btn-acao-topo {
+  position: relative;
   background: transparent;
   border: none;
   color: #64748b;

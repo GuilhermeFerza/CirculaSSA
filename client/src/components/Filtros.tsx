@@ -98,6 +98,7 @@ export default function Filtros({mostrarFiltros, filtrosAtivos, alternarFiltro, 
                     onClick={toggleFiltros}
                 >
                     <Filter size={20} />
+                    
                 </button>
             </div>
             
