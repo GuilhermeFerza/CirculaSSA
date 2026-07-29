@@ -88,7 +88,7 @@ export default function Login({setAbaAtiva, setPerfilUsuario}:LoginProps){
                 
                 <div className="links-adicionais">
                 <p className={aviso}>senhas ou email incorretos</p>
-                <a href="#">Esqueci minha senha</a>
+                <a style={{cursor: 'pointer'}} onClick={(e)=>{e.preventDefault(); setAbaAtiva('forgot-password')}}>Esqueci minha senha</a>
                 <a style={{cursor: 'pointer'}} onClick={(e)=>{e.preventDefault(); setAbaAtiva('register')}}>Criar uma nova conta</a>
                 </div>
             </div>

@@ -11,6 +11,7 @@ import Perfil from './components/Perfil';
 import DetalhesVaga from './components/DetalhesVaga';
 import Register from './components/Register';
 import Login from './components/Login';
+import EsqueciSenha from './components/EsqueciSenha';
 import { Toaster } from 'react-hot-toast';
 import { fetchAuth } from './utils/api';
 
@@ -156,6 +157,12 @@ export default function App() {
         <Login
           setAbaAtiva={setAbaAtiva}
           setPerfilUsuario={setPerfilUsuario}
+        />
+      )}
+
+      {abaAtiva === 'forgot-password' && (
+        <EsqueciSenha
+          setAbaAtiva={setAbaAtiva}
         />
       )}
 
