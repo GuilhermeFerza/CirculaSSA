@@ -87,6 +87,7 @@ func main() {
 	vagaCtrl := &controllers.VagaController{DB: db}
 	userCtrl := &controllers.UserController{DB: db, JwtKey: jwtKey}
 	salvasCtrl := &controllers.SalvasController{DB: db}
+	notificacaoController := &controllers.NotificacaoController{DB: db}
 	forgotPwdCtrl := controllers.NewForgotPasswordController(db)
 
 	r.Use(cors.New(config))
@@ -101,6 +102,8 @@ func main() {
 		api.POST("/forgot-password", forgotPwdCtrl.ForgotPassword)
 		api.POST("/verify-code", forgotPwdCtrl.VerifyCode)
 		api.POST("/reset-password", forgotPwdCtrl.ResetPassword)
+		api.GET("/notificacoes", AuthMiddleware(), notificacaoController.GetNotif)
+		api.PUT("/notificacoes/:id/lida", AuthMiddleware(), notificacaoController.MarcarComoLida)
 
 	}
 
