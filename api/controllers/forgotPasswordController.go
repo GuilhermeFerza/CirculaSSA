@@ -63,7 +63,7 @@ func (fpc *ForgotPasswordController) ForgotPassword(c *gin.Context) {
 	var existe int
 	err := fpc.DB.QueryRow("SELECT 1 FROM users WHERE email = $1", req.Email).Scan(&existe)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"mensagem": "Se o email estiver cadastrado, voce recebera um codigo"})
+		c.JSON(http.StatusNotFound, gin.H{"erro": "Email nao existe"})
 		return
 	}
 

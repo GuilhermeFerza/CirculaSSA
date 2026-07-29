@@ -41,7 +41,7 @@ export default function EsqueciSenha({ setAbaAtiva }: EsqueciSenhaProps) {
             } else {
                 toast.error(data.erro || "Erro ao enviar codigo")
             }
-        } catch {
+        } catch(error) {
             toast.error("Nao foi possivel enviar o email.")
         }
         setIsSubmitting(false)
