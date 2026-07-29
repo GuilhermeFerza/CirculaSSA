@@ -101,6 +101,8 @@ func main() {
 		api.POST("/forgot-password", forgotPwdCtrl.ForgotPassword)
 		api.POST("/verify-code", forgotPwdCtrl.VerifyCode)
 		api.POST("/reset-password", forgotPwdCtrl.ResetPassword)
+		api.GET("/notificacoes", AuthMiddleware(), notificacaoController.GetNotif)
+		api.PUT("/notificacoes/:id/lida", AuthMiddleware(), notificacaoController.MarcarComoLida)
 
 	}
 

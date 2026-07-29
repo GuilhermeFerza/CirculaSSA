@@ -149,6 +149,20 @@ func (vc *VagaController) PostVagas(c *gin.Context) {
 
 	log.Printf("[ALERTA] %d candidatos encontrados no raio da vaga!", len(candidatosAlvo))
 
+	for _, candidato := range candidatosAlvo {
+		sqlNotificao := `
+			INSERT INTO notificacoes (user_id, vaga_id, mensagem)
+			VALUES ($1, $2, $3)
+
+		`
+		mensagem := "Uma nova vaga de " + novaVaga.Titulo + " abriu pertinho de você!"
+
+		_, err := vc.DB.Exec(sqlNotificao, candidato.ID, novaVaga.ID, mensagem)
+		if err != nil {
+			log.Printf("[NOTIFICACAO/ERROR] Falha ao criar notificação para o user %d: %v", candidato.ID, err)
+		}
+	}
+
 	c.JSON(http.StatusCreated, novaVaga)
 }
 

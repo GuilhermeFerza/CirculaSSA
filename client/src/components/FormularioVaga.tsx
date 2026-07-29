@@ -258,7 +258,7 @@ export default function FormularioVaga({ adicionarVagaNaLista, setAbaAtiva }: Fo
                     />
                 </div>
 
-                    <button type='submit' className='btn-submit'>
+                    <button type='submit' className='btn-submit' disabled={isSubmitting}>
                         <Send size={20} /> {isSubmitting ? "Enviando..." : "Anunciar Vaga"}
                     </button>
             </form>
